@@ -1,3 +1,5 @@
+const https = require('https');
+
 const CLIENT_ID     = 'DDA1B6E801104C488FDB24EC34268C26';
 const CLIENT_SECRET = 'VlZShBgNbrJFfU4eDnH-H0mCv0OmgqiVXTTj4cSeFs_UCBHn';
 const REDIRECT_URI  = 'https://effulgent-dasik-65faf7.netlify.app/';
@@ -19,21 +21,37 @@ exports.handler = async function(event) {
     } else {
       return { statusCode: 400, body: 'Invalid grant_type' };
     }
-    const response = await fetch('https://identity.xero.com/connect/token', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams(params).toString()
+    const postData = new URLSearchParams(params).toString();
+    const auth = Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'identity.xero.com',
+        path: '/connect/token',
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + auth,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      };
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          resolve({
+            statusCode: res.statusCode,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+            body: data
+          });
+        });
+      });
+      req.on('error', (error) => {
+        resolve({ statusCode: 500, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ error: error.message }) });
+      });
+      req.write(postData);
+      req.end();
     });
-    const data = await response.text();
-    return {
-      statusCode: response.status,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: data
-    };
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+    return { statusCode: 500, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ error: error.message }) };
   }
 };
