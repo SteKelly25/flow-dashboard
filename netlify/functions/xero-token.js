@@ -1,6 +1,6 @@
 const CLIENT_ID     = 'DDA1B6E801104C488FDB24EC34268C26';
 const CLIENT_SECRET = 'VlZShBgNbrJFfU4eDnH-H0mCv0OmgqiVXTTj4cSeFs_UCBHn';
-const REDIRECT_URI  = 'https://quiet-croissant-163002.netlify.app/';
+const REDIRECT_URI  = 'https://effulgent-dasik-65faf7.netlify.app/';
 
 exports.handler = async function(event) {
   if (event.httpMethod === 'OPTIONS') {
