@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOW Accounting | Monthly Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f4f6f9; color: #333; }
+        .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f2d4a 0%, #1a5276 100%); }
+        .login-card { background: white; border-radius: 14px; padding: 52px 48px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+        .login-logo { font-size: 26px; font-weight: 800; color: #0f2d4a; letter-spacing: -0.5px; }
+        .login-logo span { color: #13B5EA; }
+        .login-tagline { font-size: 13px; color: #888; margin: 6px 0 36px; }
+        .btn-xero { background: #13B5EA; color: white; border: none; padding: 15px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
+        .btn-xero:hover { background: #0fa3d4; }
+        .login-footer { font-size: 11px; color: #ccc; margin-top: 24px; line-height: 1.6; }
+        .header { background: #0f2d4a; color: white; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 58px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+        .header-logo { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+        .header-logo span { color: #13B5EA; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .org-selector { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; max-width: 220px; }
+        .org-selector option { color: #333; background: white; }
+        .header-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); padding: 7px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+        .header-btn:hover { background: rgba(255,255,255,0.2); }
+        .header-btn.print-btn { background: rgba(19,181,234,0.25); border-color: rgba(19,181,234,0.5); }
+        .controls-bar { background: white; border-bottom: 1px solid #e8ecf0; padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .controls-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .month-select { border: 1px solid #dde2e8; background: white; padding: 7px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #0f2d4a; cursor: pointer; }
+        .report-title-bar { flex: 1; text-align: center; }
+        .report-title { font-size: 15px; font-weight: 700; color: #0f2d4a; }
+        .report-subtitle { font-size: 11px; color: #aaa; }
+        .last-updated { font-size: 11px; color: #bbb; margin-left: auto; }
+        .main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+        .report-header { background: white; border-radius: 10px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #13B5EA; }
+        .rh-firm { font-size: 20px; font-weight: 800; color: #0f2d4a; }
+        .rh-firm span { color: #13B5EA; }
+        .rh-detail { font-size: 13px; color: #888; margin-top: 4px; }
+        .rh-right { text-align: right; }
+        .rh-period { font-size: 22px; font-weight: 800; color: #0f2d4a; }
+        .rh-tag { display: inline-block; background: #e8f7fd; color: #13B5EA; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+        .card { background: white; border-radius: 10px; padding: 20px 22px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); position: relative; overflow: hidden; }
+        .card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+        .card.c-blue::after { background: #13B5EA; } .card.c-green::after { background: #22c55e; }
+        .card.c-purple::after { background: #8b5cf6; } .card.c-amber::after { background: #f59e0b; }
+        .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: #999; margin-bottom: 8px; font-weight: 600; }
+        .card-value { font-size: 26px; font-weight: 800; color: #0f2d4a; line-height: 1; }
+        .card-value.pos { color: #16a34a; } .card-value.neg { color: #dc2626; }
+        .card-mom { font-size: 12px; margin-top: 8px; font-weight: 600; }
+        .card-mom.up { color: #16a34a; } .card-mom.down { color: #dc2626; } .card-mom.flat { color: #aaa; }
+        .panel { background: white; border-radius: 10px; padding: 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); margin-bottom: 20px; }
+        .panel-title { font-size: 15px; font-weight: 700; color: #0f2d4a; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 2px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center; }
+        .panel-title small { font-size: 12px; font-weight: 400; color: #aaa; }
+        .tax-table { width: 100%; border-collapse: collapse; }
+        .tax-table tr { border-bottom: 1px solid #f2f4f7; } .tax-table tr:last-child { border-bottom: none; }
+        .tax-table td { padding: 13px 8px; font-size: 14px; }
+        .tax-table td:last-child { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; color: #0f2d4a; }
+        .tax-table .total-row td { background: #f8fafc; font-weight: 700; border-top: 2px solid #e2e8f0; }
+        .tax-table .total-row td:last-child { color: #dc2626; font-size: 16px; }
+        .tax-label { font-weight: 600; } .tax-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+        .pl-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .pl-table th { text-align: right; padding: 0 10px 12px; font-size: 11px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid #f0f2f5; }
+        .pl-table th:first-child { text-align: left; }
+        .pl-table td { padding: 8px 10px; border-bottom: 1px solid #f8f9fb; }
+        .pl-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+        .pl-table .section-header td { padding: 16px 10px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: #bbb; font-weight: 700; border: none; }
+        .pl-table .indent td:first-child { padding-left: 24px; color: #555; }
+        .pl-table .subtotal td { font-weight: 700; background: #f8fafc; border-top: 1px solid #e8ecf0; border-bottom: 1px solid #e8ecf0; }
+        .pl-table .total td { font-weight: 800; background: #f0f4f8; color: #0f2d4a; border-top: 2px solid #d0d8e4; font-size: 14px; }
+        .pl-table .pos { color: #16a34a; } .pl-table .neg { color: #dc2626; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .loading { text-align: center; padding: 60px 20px; color: #aaa; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: #13B5EA; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-box { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; font-size: 14px; }
+        .report-footer { text-align: center; font-size: 11px; color: #bbb; padding: 20px; line-height: 1.8; }
+        @media print {
+            body { background: white; }
+            .header, .controls-bar, .header-btn, .report-footer { display: none !important; }
+            .main { padding: 0; max-width: 100%; }
+            .panel, .card, .report-header { box-shadow: none; border: 1px solid #e8ecf0; }
+            .cards { grid-template-columns: repeat(4, 1fr); }
+            .two-col { grid-template-columns: 1fr 1fr; }
+            @page { margin: 1.5cm; }
+        }
+        @media (max-width: 900px) { .cards { grid-template-columns: repeat(2, 1fr); } .two-col { grid-template-columns: 1fr; } }
+        @media (max-width: 520px) { .cards { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+<div id="login-screen">
+    <div class="login-wrap">
+        <div class="login-card">
+            <div class="login-logo">FLOW<span> Accounting</span></div>
+            <div class="login-tagline">& Tax Advice — Monthly Client Report</div>
+            <p style="font-size:14px;color:#666;margin-bottom:32px;line-height:1.6;">View your monthly financial report — cash position, tax liabilities, and profit & loss — direct from Xero.</p>
+            <button class="btn-xero" onclick="connectXero()">
+                <svg width="22" height="22" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="white"/><path d="M12 20l5 5 11-10" stroke="#13B5EA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                Sign in with Xero
+            </button>
+            <div class="login-footer">Data is fetched live from your Xero account.<br>Prepared by FLOW Accounting &amp; Tax Advice.</div>
+        </div>
+    </div>
+</div>
+<div id="dashboard" style="display:none">
+    <div class="header">
+        <div class="header-logo">FLOW<span> Accounting &amp; Tax Advice</span></div>
+        <div class="header-right">
+            <select class="org-selector" id="org-selector" onchange="selectOrg(this.value)"></select>
+            <button class="header-btn print-btn" onclick="window.print()">⬇ Save as PDF</button>
+            <button class="header-btn" onclick="loadDashboard()">↻ Refresh</button>
+            <button class="header-btn" onclick="logout()">Disconnect</button>
+        </div>
+    </div>
+    <div class="controls-bar">
+        <span class="controls-label">Reporting period</span>
+        <select class="month-select" id="month-select" onchange="loadDashboard()"></select>
+        <div class="report-title-bar">
+            <div class="report-title" id="controls-title">Monthly Financial Report</div>
+            <div class="report-subtitle">FLOW Accounting &amp; Tax Advice</div>
+        </div>
+        <div class="last-updated" id="last-updated"></div>
+    </div>
+    <div class="main">
+        <div id="error-container"></div>
+        <div id="dashboard-content"><div class="loading"><div class="spinner"></div>Loading your report…</div></div>
+        <div class="report-footer">This report is prepared by FLOW Accounting &amp; Tax Advice and contains financial data sourced directly from Xero.<br>The figures are unaudited management accounts. For advice on these results, please contact your accountant.</div>
+    </div>
+</div>
+<script>
+const CLIENT_ID     = 'DDA1B6E801104C488FDB24EC34268C26';
+const CLIENT_SECRET = 'VlZShBgNbrJFfU4eDnH-H0mCv0OmgqiVXTTj4cSeFs_UCBHn';
+const REDIRECT_URI  = 'https://quiet-croissant-163002.netlify.app/';
+const SCOPES        = 'openid profile email offline_access accounting.reports.profitandloss.read accounting.reports.balancesheet.read';
+
+function connectXero() {
+    const state = Math.random().toString(36).slice(2);
+    localStorage.setItem('xero_state', state);
+    const p = new URLSearchParams({ response_type:'code', client_id:CLIENT_ID, redirect_uri:REDIRECT_URI, scope:SCOPES, state });
+    window.location.href = 'https://login.xero.com/identity/connect/authorize?' + p;
+}
+async function exchangeCode(code) {
+    const res = await fetch('https://identity.xero.com/connect/token', {
+        method:'POST', headers:{'Authorization':'Basic '+btoa(CLIENT_ID+':'+CLIENT_SECRET),'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({grant_type:'authorization_code',code,redirect_uri:REDIRECT_URI})
+    });
+    if (!res.ok) throw new Error('Token exchange failed: ' + await res.text());
+    return res.json();
+}
+async function doRefresh() {
+    const rt = localStorage.getItem('xero_refresh_token');
+    if (!rt) throw new Error('Session expired — please reconnect.');
+    const res = await fetch('https://identity.xero.com/connect/token', {
+        method:'POST', headers:{'Authorization':'Basic '+btoa(CLIENT_ID+':'+CLIENT_SECRET),'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({grant_type:'refresh_token',refresh_token:rt})
+    });
+    if (!res.ok) throw new Error('Session expired — please reconnect.');
+    const t = await res.json(); saveTokens(t); return t.access_token;
+}
+function saveTokens(t) {
+    localStorage.setItem('xero_access_token', t.access_token);
+    if (t.refresh_token) localStorage.setItem('xero_refresh_token', t.refresh_token);
+    localStorage.setItem('xero_token_expiry', Date.now() + t.expires_in * 1000);
+}
+async function getToken() {
+    const expiry = parseInt(localStorage.getItem('xero_token_expiry') || '0');
+    if (Date.now() > expiry - 60000) return doRefresh();
+    return localStorage.getItem('xero_access_token');
+}
+function logout() { localStorage.clear(); document.getElementById('dashboard').style.display='none'; document.getElementById('login-screen').style.display='block'; }
+async function xeroGet(path, tenantId) {
+    const token = await getToken();
+    const headers = {'Authorization':'Bearer '+token,'Accept':'application/json'};
+    if (tenantId) headers['Xero-tenant-id'] = tenantId;
+    const res = await fetch('https://api.xero.com'+path, {headers});
+    if (!res.ok) throw new Error('Xero API '+res.status+': '+path);
+    return res.json();
+}
+const d8601 = d => d.toISOString().split('T')[0];
+async function getConnections() { return xeroGet('/connections'); }
+async function getPL(tid,from,to) { return xeroGet(`/api.xro/2.0/Reports/ProfitAndLoss?fromDate=${from}&toDate=${to}`,tid); }
+async function getBS(tid,date) { return xeroGet(`/api.xro/2.0/Reports/BalanceSheet?date=${date}`,tid); }
+function cellNum(cell) { if(!cell) return null; const n=parseFloat((cell.Value||'').toString().replace(/[^0-9.-]/g,'')); return isNaN(n)?null:n; }
+function findVal(rows,label) {
+    if(!rows) return null;
+    for(const row of rows) {
+        if((row.RowType==='SummaryRow'||row.RowType==='Row')&&row.Cells?.length)
+            if((row.Cells[0].Value||'').toLowerCase().includes(label.toLowerCase())) return cellNum(row.Cells[1]);
+        if(row.Rows){const v=findVal(row.Rows,label);if(v!==null)return v;}
+    }
+    return null;
+}
+function flattenPL(rows,depth=0) {
+    const out=[];if(!rows)return out;
+    for(const row of rows){
+        if(row.RowType==='Header')continue;
+        if(row.RowType==='Section'){if(row.Title)out.push({type:'section',label:row.Title});if(row.Rows)out.push(...flattenPL(row.Rows,depth+1));}
+        else if(row.RowType==='SummaryRow'){const c=row.Cells||[];out.push({type:'subtotal',label:c[0]?.Value||'',cur:cellNum(c[1]),ytd:cellNum(c[2]),depth});}
+        else if(row.RowType==='Row'){const c=row.Cells||[];out.push({type:'row',label:c[0]?.Value||'',cur:cellNum(c[1]),ytd:cellNum(c[2]),depth});}
+    }
+    return out;
+}
+function fmt(n,full=false){
+    if(n===null||n===undefined||isNaN(n))return'—';
+    const abs=Math.abs(n);let s;
+    if(full||abs<10000)s='£'+abs.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+    else if(abs<1000000)s='£'+Math.round(abs).toLocaleString('en-GB');
+    else s='£'+(abs/1000000).toFixed(2)+'m';
+    return n<0?'('+s+')':s;
+}
+function vc(n){return n===null?'':(n<0?'neg':'pos');}
+function momLabel(cur,prev){
+    if(prev===null||prev===0||cur===null)return{cls:'flat',text:'—'};
+    const pct=((cur-prev)/Math.abs(prev))*100;
+    return{cls:pct>=0?'up':'down',text:(pct>=0?'▲':'▼')+' '+Math.abs(pct).toFixed(1)+'% vs prior month'};
+}
+function buildMonthOptions(){
+    const sel=document.getElementById('month-select'),now=new Date();sel.innerHTML='';
+    for(let i=0;i<13;i++){
+        const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+        const val=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        const opt=document.createElement('option');opt.value=val;opt.textContent=d.toLocaleString('en-GB',{month:'long',year:'numeric'});
+        if(i===1)opt.selected=true;sel.appendChild(opt);
+    }
+}
+function selectedPeriod(){
+    const[year,month]=document.getElementById('month-select').value.split('-').map(Number);
+    return{from:new Date(year,month-1,1),to:new Date(year,month,0),prevFrom:new Date(year,month-2,1),prevTo:new Date(year,month-1,0)};
+}
+let connections=[],currentTenantId=null;
+async function loadOrgs(){
+    connections=await getConnections();const sel=document.getElementById('org-selector');
+    if(!connections.length){sel.innerHTML='<option>No orgs found</option>';return;}
+    sel.innerHTML=connections.map(c=>`<option value="${c.tenantId}">${c.tenantName}</option>`).join('');
+    const saved=localStorage.getItem('xero_tenant_id');
+    currentTenantId=(saved&&connections.find(c=>c.tenantId===saved))?saved:connections[0].tenantId;
+    sel.value=currentTenantId;
+}
+function selectOrg(id){currentTenantId=id;localStorage.setItem('xero_tenant_id',id);loadDashboard();}
+async function loadDashboard(){
+    if(!currentTenantId)return;
+    document.getElementById('dashboard-content').innerHTML='<div class="loading"><div class="spinner"></div>Loading report…</div>';
+    document.getElementById('error-container').innerHTML='';
+    try{
+        const{from,to,prevFrom,prevTo}=selectedPeriod();
+        const monthName=from.toLocaleString('en-GB',{month:'long',year:'numeric'});
+        const orgName=connections.find(c=>c.tenantId===currentTenantId)?.tenantName||'';
+        document.getElementById('controls-title').textContent=monthName+' Report — '+orgName;
+        const[plData,prevPlData,bsData]=await Promise.all([getPL(currentTenantId,d8601(from),d8601(to)),getPL(currentTenantId,d8601(prevFrom),d8601(prevTo)),getBS(currentTenantId,d8601(to))]);
+        const plRows=plData.Reports?.[0]?.Rows||[],prevRows=prevPlData.Reports?.[0]?.Rows||[],bsRows=bsData.Reports?.[0]?.Rows||[];
+        const revenue=findVal(plRows,'Total Income')??findVal(plRows,'Total Revenue')??0;
+        const grossProfit=findVal(plRows,'Gross Profit')??0;
+        const netProfit=findVal(plRows,'Net Profit')??findVal(plRows,'Profit for')??0;
+        const cashInBank=findVal(bsRows,'Total Bank')??findVal(bsRows,'Bank')??0;
+        const prevRevenue=findVal(prevRows,'Total Income')??findVal(prevRows,'Total Revenue')??null;
+        const prevGross=findVal(prevRows,'Gross Profit')??null;
+        const prevNet=findVal(prevRows,'Net Profit')??findVal(prevRows,'Profit for')??null;
+        const vatLiab=findVal(bsRows,'VAT')??0,payeLiab=findVal(bsRows,'PAYE')??findVal(bsRows,'Wages Payable')??0,ctLiab=findVal(bsRows,'Corporation Tax')??findVal(bsRows,'Income Tax')??0;
+        const taxTotal=vatLiab+payeLiab+ctLiab;
+        const momRev=momLabel(revenue,prevRevenue),momGross=momLabel(grossProfit,prevGross),momNet=momLabel(netProfit,prevNet);
+        const plFlat=flattenPL(plRows);
+        const plHtml=plFlat.map(r=>{
+            if(r.type==='section')return`<tr class="section-header"><td colspan="3">${r.label}</td></tr>`;
+            const isTotal=r.type==='subtotal'&&(r.label.toLowerCase().includes('net')||r.label.toLowerCase().includes('total income')||r.label.toLowerCase().includes('total revenue'));
+            const cls=isTotal?'total':r.type==='subtotal'?'subtotal':r.depth>1?'indent':'';
+            return`<tr class="${cls}"><td>${r.label}</td><td class="${vc(r.cur)}">${fmt(r.cur,true)}</td><td class="${vc(r.ytd)}" style="opacity:0.6">${fmt(r.ytd,true)}</td></tr>`;
+        }).join('');
+        const grossMargin=revenue?Math.round(grossProfit/revenue*100)+'%':'—';
+        const netMargin=revenue?Math.round(netProfit/revenue*100)+'%':'—';
+        const cashCover=taxTotal?(cashInBank>=taxTotal?'<span style="color:#16a34a;font-weight:700">✓ Covered</span>':'<span style="color:#dc2626;font-weight:700">⚠ Shortfall</span>'):'—';
+        document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+        document.getElementById('dashboard-content').innerHTML=`
+            <div class="report-header"><div><div class="rh-firm">FLOW<span> Accounting &amp; Tax Advice</span></div><div class="rh-detail">${orgName}</div></div><div class="rh-right"><div class="rh-period">${monthName}</div><div><span class="rh-tag">Monthly Report</span></div></div></div>
+            <div class="cards">
+                <div class="card c-blue"><div class="card-label">Cash in Bank</div><div class="card-value ${vc(cashInBank)}">${fmt(cashInBank)}</div><div class="card-mom flat">As at end of month</div></div>
+                <div class="card c-green"><div class="card-label">Revenue</div><div class="card-value">${fmt(revenue)}</div><div class="card-mom ${momRev.cls}">${momRev.text}</div></div>
+                <div class="card c-purple"><div class="card-label">Gross Profit</div><div class="card-value ${vc(grossProfit)}">${fmt(grossProfit)}</div><div class="card-mom ${momGross.cls}">${momGross.text}</div></div>
+                <div class="card ${netProfit>=0?'c-green':'c-amber'}"><div class="card-label">Net Profit</div><div class="card-value ${vc(netProfit)}">${fmt(netProfit)}</div><div class="card-mom ${momNet.cls}">${momNet.text}</div></div>
+            </div>
+            <div class="two-col">
+                <div class="panel"><div class="panel-title">Tax Liabilities <small>from balance sheet</small></div><table class="tax-table">
+                    <tr><td><div class="tax-label">VAT</div><div class="tax-sub">Balance sheet liability</div></td><td>${fmt(vatLiab,true)}</td></tr>
+                    <tr><td><div class="tax-label">PAYE / NI</div><div class="tax-sub">Balance sheet liability</div></td><td>${fmt(payeLiab,true)}</td></tr>
+                    <tr><td><div class="tax-label">Corporation Tax</div><div class="tax-sub">Balance sheet provision</div></td><td>${fmt(ctLiab,true)}</td></tr>
+                    <tr class="total-row"><td><strong>Total Tax Liabilities</strong></td><td>${fmt(taxTotal,true)}</td></tr>
+                </table></div>
+                <div class="panel"><div class="panel-title">Performance Summary</div><table class="tax-table">
+                    <tr><td><div class="tax-label">Gross Margin</div><div class="tax-sub">${monthName}</div></td><td>${grossMargin}</td></tr>
+                    <tr><td><div class="tax-label">Net Margin</div><div class="tax-sub">${monthName}</div></td><td>${netMargin}</td></tr>
+                    <tr><td><div class="tax-label">Cash vs Tax Liabilities</div><div class="tax-sub">Coverage check</div></td><td>${cashCover}</td></tr>
+                    <tr><td><div class="tax-label">Prior Month Revenue</div><div class="tax-sub">For comparison</div></td><td>${fmt(prevRevenue,true)}</td></tr>
+                </table></div>
+            </div>
+            <div class="panel"><div class="panel-title">Profit &amp; Loss <small>${monthName}</small></div>
+                <table class="pl-table"><thead><tr><th style="text-align:left;width:55%">Account</th><th>This Month</th><th>Year to Date</th></tr></thead><tbody>${plHtml}</tbody></table>
+            </div>`;
+    }catch(err){
+        console.error(err);
+        document.getElementById('error-container').innerHTML=`<div class="error-box">⚠ ${err.message} — <a href="#" onclick="loadDashboard();return false;">Try again</a></div>`;
+        document.getElementById('dashboard-content').innerHTML='';
+    }
+}
+async function init(){
+    const params=new URLSearchParams(window.location.search),code=params.get('code'),state=params.get('state');
+    if(code){
+        if(state!==localStorage.getItem('xero_state')){alert('Security error: please try again.');return;}
+        try{
+            document.getElementById('login-screen').querySelector('.login-card').innerHTML='<div style="font-size:16px;color:#0f2d4a;text-align:center;padding:20px"><div class="spinner" style="margin:0 auto 16px;width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#13B5EA;border-radius:50%;animation:spin 0.75s linear infinite"></div>Connecting to Xero…</div>';
+            saveTokens(await exchangeCode(code));history.replaceState({},'',location.pathname);await showDashboard();
+        }catch(e){alert('Connection failed: '+e.message);}
+        return;
+    }
+    if(localStorage.getItem('xero_access_token'))await showDashboard();
+}
+async function showDashboard(){
+    document.getElementById('login-screen').style.display='none';document.getElementById('dashboard').style.display='block';
+    buildMonthOptions();await loadOrgs();await loadDashboard();
+}
+init().catch(console.error);
+</script>
+</body>
+</html>
