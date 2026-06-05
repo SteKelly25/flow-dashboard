@@ -179,10 +179,12 @@ function logout() { localStorage.clear(); document.getElementById('dashboard').s
 
 async function xeroGet(path, tenantId) {
     const token = await getToken();
-    const headers = {'Authorization':'Bearer '+token,'Accept':'application/json'};
-    if (tenantId) headers['Xero-tenant-id'] = tenantId;
-    const res = await fetch('https://api.xero.com'+path, {headers});
-    if (!res.ok) throw new Error('Xero API '+res.status+': '+path);
+    const res = await fetch('/.netlify/functions/xero-api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, token, tenantId })
+    });
+    if (!res.ok) throw new Error('Xero API ' + res.status + ': ' + path);
     return res.json();
 }
 
