@@ -129,10 +129,10 @@
     </div>
 </div>
 <script>
-const CLIENT_ID    = 'DDA1B6E801104C488FDB24EC34268C26'; const TOKEN_URL    = '/.netlify/functions/xero-token';
-const CLIENT_SECRET = 'VlZShBgNbrJFfU4eDnH-H0mCv0OmgqiVXTTj4cSeFs_UCBHn';
-const REDIRECT_URI  = 'https://effulgent-dasik-65faf7.netlify.app/';
-const SCOPES        = 'openid profile email offline_access accounting.reports.profitandloss.read accounting.reports.balancesheet.read';
+const CLIENT_ID    = 'DDA1B6E801104C488FDB24EC34268C26';
+const REDIRECT_URI = 'https://effulgent-dasik-65faf7.netlify.app/';
+const SCOPES       = 'openid profile email offline_access accounting.reports.profitandloss.read accounting.reports.balancesheet.read';
+const TOKEN_URL    = '/.netlify/functions/xero-token';
 
 function connectXero() {
     const state = Math.random().toString(36).slice(2);
@@ -140,7 +140,8 @@ function connectXero() {
     const p = new URLSearchParams({ response_type:'code', client_id:CLIENT_ID, redirect_uri:REDIRECT_URI, scope:SCOPES, state });
     window.location.href = 'https://login.xero.com/identity/connect/authorize?' + p;
 }
-    async function exchangeCode(code) {
+
+async function exchangeCode(code) {
     const res = await fetch(TOKEN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -149,7 +150,7 @@ function connectXero() {
     if (!res.ok) throw new Error('Token exchange failed: ' + await res.text());
     return res.json();
 }
-}
+
 async function doRefresh() {
     const rt = localStorage.getItem('xero_refresh_token');
     if (!rt) throw new Error('Session expired — please reconnect.');
@@ -161,17 +162,21 @@ async function doRefresh() {
     if (!res.ok) throw new Error('Session expired — please reconnect.');
     const t = await res.json(); saveTokens(t); return t.access_token;
 }
+
 function saveTokens(t) {
     localStorage.setItem('xero_access_token', t.access_token);
     if (t.refresh_token) localStorage.setItem('xero_refresh_token', t.refresh_token);
     localStorage.setItem('xero_token_expiry', Date.now() + t.expires_in * 1000);
 }
+
 async function getToken() {
     const expiry = parseInt(localStorage.getItem('xero_token_expiry') || '0');
     if (Date.now() > expiry - 60000) return doRefresh();
     return localStorage.getItem('xero_access_token');
 }
+
 function logout() { localStorage.clear(); document.getElementById('dashboard').style.display='none'; document.getElementById('login-screen').style.display='block'; }
+
 async function xeroGet(path, tenantId) {
     const token = await getToken();
     const headers = {'Authorization':'Bearer '+token,'Accept':'application/json'};
@@ -180,11 +185,14 @@ async function xeroGet(path, tenantId) {
     if (!res.ok) throw new Error('Xero API '+res.status+': '+path);
     return res.json();
 }
+
 const d8601 = d => d.toISOString().split('T')[0];
 async function getConnections() { return xeroGet('/connections'); }
 async function getPL(tid,from,to) { return xeroGet(`/api.xro/2.0/Reports/ProfitAndLoss?fromDate=${from}&toDate=${to}`,tid); }
 async function getBS(tid,date) { return xeroGet(`/api.xro/2.0/Reports/BalanceSheet?date=${date}`,tid); }
+
 function cellNum(cell) { if(!cell) return null; const n=parseFloat((cell.Value||'').toString().replace(/[^0-9.-]/g,'')); return isNaN(n)?null:n; }
+
 function findVal(rows,label) {
     if(!rows) return null;
     for(const row of rows) {
@@ -194,6 +202,7 @@ function findVal(rows,label) {
     }
     return null;
 }
+
 function flattenPL(rows,depth=0) {
     const out=[];if(!rows)return out;
     for(const row of rows){
@@ -204,6 +213,7 @@ function flattenPL(rows,depth=0) {
     }
     return out;
 }
+
 function fmt(n,full=false){
     if(n===null||n===undefined||isNaN(n))return'—';
     const abs=Math.abs(n);let s;
@@ -212,12 +222,15 @@ function fmt(n,full=false){
     else s='£'+(abs/1000000).toFixed(2)+'m';
     return n<0?'('+s+')':s;
 }
+
 function vc(n){return n===null?'':(n<0?'neg':'pos');}
+
 function momLabel(cur,prev){
     if(prev===null||prev===0||cur===null)return{cls:'flat',text:'—'};
     const pct=((cur-prev)/Math.abs(prev))*100;
     return{cls:pct>=0?'up':'down',text:(pct>=0?'▲':'▼')+' '+Math.abs(pct).toFixed(1)+'% vs prior month'};
 }
+
 function buildMonthOptions(){
     const sel=document.getElementById('month-select'),now=new Date();sel.innerHTML='';
     for(let i=0;i<13;i++){
@@ -227,11 +240,14 @@ function buildMonthOptions(){
         if(i===1)opt.selected=true;sel.appendChild(opt);
     }
 }
+
 function selectedPeriod(){
     const[year,month]=document.getElementById('month-select').value.split('-').map(Number);
     return{from:new Date(year,month-1,1),to:new Date(year,month,0),prevFrom:new Date(year,month-2,1),prevTo:new Date(year,month-1,0)};
 }
+
 let connections=[],currentTenantId=null;
+
 async function loadOrgs(){
     connections=await getConnections();const sel=document.getElementById('org-selector');
     if(!connections.length){sel.innerHTML='<option>No orgs found</option>';return;}
@@ -240,7 +256,9 @@ async function loadOrgs(){
     currentTenantId=(saved&&connections.find(c=>c.tenantId===saved))?saved:connections[0].tenantId;
     sel.value=currentTenantId;
 }
+
 function selectOrg(id){currentTenantId=id;localStorage.setItem('xero_tenant_id',id);loadDashboard();}
+
 async function loadDashboard(){
     if(!currentTenantId)return;
     document.getElementById('dashboard-content').innerHTML='<div class="loading"><div class="spinner"></div>Loading report…</div>';
@@ -304,6 +322,7 @@ async function loadDashboard(){
         document.getElementById('dashboard-content').innerHTML='';
     }
 }
+
 async function init(){
     const params=new URLSearchParams(window.location.search),code=params.get('code'),state=params.get('state');
     if(code){
@@ -316,10 +335,12 @@ async function init(){
     }
     if(localStorage.getItem('xero_access_token'))await showDashboard();
 }
+
 async function showDashboard(){
     document.getElementById('login-screen').style.display='none';document.getElementById('dashboard').style.display='block';
     buildMonthOptions();await loadOrgs();await loadDashboard();
 }
+
 init().catch(console.error);
 </script>
 </body>
