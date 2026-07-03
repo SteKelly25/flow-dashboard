@@ -59,6 +59,10 @@
         .tax-table .total-row td { background: #f8fafc; font-weight: 700; border-top: 2px solid #e2e8f0; }
         .tax-table .total-row td:last-child { color: #dc2626; font-size: 16px; }
         .tax-label { font-weight: 600; } .tax-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+        .tax-est td:last-child { color: #8b5cf6; }
+        .est-badge { display: inline-block; background: #f3e8ff; color: #8b5cf6; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.4px; vertical-align: middle; }
+        .due-soon { color: #d97706 !important; }
+        .panel-note { font-size: 11px; color: #aaa; margin-top: 12px; line-height: 1.6; }
         .pl-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .pl-table th { text-align: right; padding: 0 10px 12px; font-size: 11px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid #f0f2f5; }
         .pl-table th:first-child { text-align: left; }
@@ -125,13 +129,13 @@
     <div class="main">
         <div id="error-container"></div>
         <div id="dashboard-content"><div class="loading"><div class="spinner"></div>Loading your report…</div></div>
-        <div class="report-footer">This report is prepared by FLOW Accounting &amp; Tax Advice and contains financial data sourced directly from Xero.<br>The figures are unaudited management accounts. For advice on these results, please contact your accountant.</div>
+        <div class="report-footer">This report is prepared by FLOW Accounting &amp; Tax Advice and contains financial data sourced directly from Xero.<br>The figures are unaudited management accounts. Tax figures marked “estimate” are indicative only and are not a substitute for a formal computation. For advice on these results, please contact your accountant.</div>
     </div>
 </div>
 <script>
 const CLIENT_ID    = 'DDA1B6E801104C488FDB24EC34268C26';
 const REDIRECT_URI = 'https://effulgent-dasik-65faf7.netlify.app/';
-const SCOPES       = 'openid profile email offline_access accounting.reports.profitandloss.read accounting.reports.balancesheet.read';
+const SCOPES       = 'openid profile email offline_access accounting.reports.profitandloss.read accounting.reports.balancesheet.read accounting.settings.read';
 const TOKEN_URL    = '/.netlify/functions/xero-token';
 
 function connectXero() {
@@ -192,6 +196,7 @@ const d8601 = d => d.toISOString().split('T')[0];
 async function getConnections() { return xeroGet('/connections'); }
 async function getPL(tid,from,to) { return xeroGet(`/api.xro/2.0/Reports/ProfitAndLoss?fromDate=${from}&toDate=${to}`,tid); }
 async function getBS(tid,date) { return xeroGet(`/api.xro/2.0/Reports/BalanceSheet?date=${date}`,tid); }
+async function getOrg(tid) { return xeroGet('/api.xro/2.0/Organisation',tid); }
 
 function cellNum(cell) { if(!cell) return null; const n=parseFloat((cell.Value||'').toString().replace(/[^0-9.-]/g,'')); return isNaN(n)?null:n; }
 
@@ -233,6 +238,92 @@ function momLabel(cur,prev){
     return{cls:pct>=0?'up':'down',text:(pct>=0?'▲':'▼')+' '+Math.abs(pct).toFixed(1)+'% vs prior month'};
 }
 
+/* ---------- Tax estimates & deadlines ---------- */
+
+// P&L expense lines that typically carry no (or no reclaimable) input VAT
+const NON_VAT_RX=/salar|wage|pension|superann|national insurance|\bnic?\b|paye|payroll|staff cost|deprec|amortis|insurance|\brates\b|interest|bank charge|bank fee|dividend|drawings|entertain/i;
+
+// UK Corporation Tax on FY-to-date profit: 19% small profits rate / 25% main rate
+// with marginal relief between limits, limits pro-rated for the elapsed part of the year.
+function ctEstimate(profit,fyStart,periodEnd,fyEnd){
+    if(profit===null||profit<=0)return 0;
+    const day=86400000;
+    const fyDays=Math.round((fyEnd-fyStart)/day)+1;
+    const elapsed=Math.min(Math.max(Math.round((periodEnd-fyStart)/day)+1,1),fyDays);
+    const f=elapsed/fyDays;
+    const lower=50000*f,upper=250000*f;
+    if(profit<=lower)return profit*0.19;
+    if(profit>=upper)return profit*0.25;
+    return profit*0.25-(upper-profit)*3/200;
+}
+
+// Financial year containing periodEnd, from Xero's FinancialYearEndDay/Month
+function fyBounds(dayN,monthN,periodEnd){
+    const mk=y=>new Date(y,monthN-1,Math.min(dayN,new Date(y,monthN,0).getDate()));
+    let end=mk(periodEnd.getFullYear());
+    if(end<periodEnd)end=mk(periodEnd.getFullYear()+1);
+    const start=new Date(end);start.setFullYear(start.getFullYear()-1);start.setDate(start.getDate()+1);
+    return{start,end};
+}
+
+function fmtDate(d){return d?d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';}
+
+// Next VAT due date assuming calendar-quarter VAT periods (return + payment: 1 month 7 days after quarter end)
+function nextVatDue(today){
+    for(let y=today.getFullYear()-1;y<=today.getFullYear()+1;y++){
+        for(const m of[2,5,8,11]){
+            const qEnd=new Date(y,m+1,0);
+            const due=new Date(y,m+2,7);
+            if(due>=today)return{qEnd,due};
+        }
+    }
+    return null;
+}
+
+// Next PAYE/NI payment (electronic): 22nd of the month, for the tax month ended the 5th
+function nextPayeDue(today){
+    let due=new Date(today.getFullYear(),today.getMonth(),22);
+    if(due<today)due=new Date(today.getFullYear(),today.getMonth()+1,22);
+    const taxMonthEnd=new Date(due.getFullYear(),due.getMonth(),5);
+    return{due,taxMonthEnd};
+}
+
+// Next CT payment (9 months + 1 day after year end) and CT600 filing (12 months after year end)
+function ctDeadlines(dayN,monthN,today){
+    const out={pay:null,file:null};
+    for(let y=today.getFullYear()-2;y<=today.getFullYear()+1;y++){
+        const fe=new Date(y,monthN-1,Math.min(dayN,new Date(y,monthN,0).getDate()));
+        const pay=new Date(fe);pay.setMonth(pay.getMonth()+9);pay.setDate(pay.getDate()+1);
+        const file=new Date(fe.getFullYear()+1,fe.getMonth(),fe.getDate());
+        if(!out.pay&&pay>=today)out.pay={date:pay,fyEnd:fe};
+        if(!out.file&&file>=today)out.file={date:file,fyEnd:fe};
+    }
+    return out;
+}
+
+function dueCls(d,today){
+    if(!d)return'';
+    return (d-today)<=14*86400000?' due-soon':'';
+}
+
+// Rough VAT accruing for the quarter to date: 20% on QTD sales less VAT-able QTD costs
+function vatQtdEstimate(qtdRows){
+    if(!qtdRows)return null;
+    const qRev=findVal(qtdRows,'Total Income')??findVal(qtdRows,'Total Revenue');
+    const qNet=findVal(qtdRows,'Net Profit')??findVal(qtdRows,'Profit for');
+    if(qRev===null||qNet===null)return null;
+    const qExp=qRev-qNet;
+    const flat=flattenPL(qtdRows);
+    let sec='',nonVat=0;
+    for(const r of flat){
+        if(r.type==='section'){sec=(r.label||'').toLowerCase();continue;}
+        if(r.type==='row'&&r.cur&&!(sec.includes('income')||sec.includes('revenue')||sec.includes('turnover'))&&NON_VAT_RX.test(r.label))nonVat+=r.cur;
+    }
+    return 0.2*qRev-0.2*Math.max(qExp-nonVat,0);
+}
+
+/* ---------------------------------------------- */
+
 function buildMonthOptions(){
     const sel=document.getElementById('month-select'),now=new Date();sel.innerHTML='';
     for(let i=0;i<13;i++){
@@ -270,8 +361,25 @@ async function loadDashboard(){
         const monthName=from.toLocaleString('en-GB',{month:'long',year:'numeric'});
         const orgName=connections.find(c=>c.tenantId===currentTenantId)?.tenantName||'';
         document.getElementById('controls-title').textContent=monthName+' Report — '+orgName;
-        const[plData,prevPlData,bsData]=await Promise.all([getPL(currentTenantId,d8601(from),d8601(to)),getPL(currentTenantId,d8601(prevFrom),d8601(prevTo)),getBS(currentTenantId,d8601(to))]);
+        const qStart=new Date(to.getFullYear(),Math.floor(to.getMonth()/3)*3,1);
+        const[plData,prevPlData,bsData,orgData,qtdData]=await Promise.all([
+            getPL(currentTenantId,d8601(from),d8601(to)),
+            getPL(currentTenantId,d8601(prevFrom),d8601(prevTo)),
+            getBS(currentTenantId,d8601(to)),
+            getOrg(currentTenantId).catch(()=>null),
+            getPL(currentTenantId,d8601(qStart),d8601(to)).catch(()=>null)
+        ]);
         const plRows=plData.Reports?.[0]?.Rows||[],prevRows=prevPlData.Reports?.[0]?.Rows||[],bsRows=bsData.Reports?.[0]?.Rows||[];
+        const qtdRows=qtdData?.Reports?.[0]?.Rows||null;
+        const org=orgData?.Organisations?.[0]||null;
+
+        // FY-to-date P&L for the CT estimate (needs the org's financial year end)
+        let fy=null,fytdRows=null;
+        if(org?.FinancialYearEndMonth){
+            fy=fyBounds(org.FinancialYearEndDay||31,org.FinancialYearEndMonth,to);
+            try{fytdRows=(await getPL(currentTenantId,d8601(fy.start),d8601(to))).Reports?.[0]?.Rows||null;}catch(e){fytdRows=null;}
+        }
+
         const revenue=findVal(plRows,'Total Income')??findVal(plRows,'Total Revenue')??0;
         const grossProfit=findVal(plRows,'Gross Profit')??0;
         const netProfit=findVal(plRows,'Net Profit')??findVal(plRows,'Profit for')??0;
@@ -280,7 +388,24 @@ async function loadDashboard(){
         const prevGross=findVal(prevRows,'Gross Profit')??null;
         const prevNet=findVal(prevRows,'Net Profit')??findVal(prevRows,'Profit for')??null;
         const vatLiab=findVal(bsRows,'VAT')??0,payeLiab=findVal(bsRows,'PAYE')??findVal(bsRows,'Wages Payable')??0,ctLiab=findVal(bsRows,'Corporation Tax')??findVal(bsRows,'Income Tax')??0;
-        const taxTotal=vatLiab+payeLiab+ctLiab;
+
+        // --- Estimates ---
+        const ytdProfit=fytdRows?(findVal(fytdRows,'Net Profit')??findVal(fytdRows,'Profit for')):null;
+        const ctEst=(fy&&ytdProfit!==null)?ctEstimate(ytdProfit,fy.start,to,fy.end):null;
+        const vatEst=vatQtdEstimate(qtdRows);
+
+        // Total uses the balance sheet figure where present, otherwise the estimate
+        const vatUsed=vatLiab>0?vatLiab:(vatEst!==null&&vatEst>0?vatEst:0);
+        const ctUsed=ctLiab>0?ctLiab:(ctEst!==null?ctEst:0);
+        const usesEstimates=(vatLiab<=0&&vatEst!==null&&vatEst>0)||(ctLiab<=0&&ctEst!==null&&ctEst>0);
+        const taxTotal=vatUsed+payeLiab+ctUsed;
+
+        // --- Deadlines ---
+        const today=new Date();
+        const vatDue=nextVatDue(today);
+        const payeDue=nextPayeDue(today);
+        const ctDue=org?.FinancialYearEndMonth?ctDeadlines(org.FinancialYearEndDay||31,org.FinancialYearEndMonth,today):null;
+
         const momRev=momLabel(revenue,prevRevenue),momGross=momLabel(grossProfit,prevGross),momNet=momLabel(netProfit,prevNet);
         const plFlat=flattenPL(plRows);
         const plHtml=plFlat.map(r=>{
@@ -292,6 +417,22 @@ async function loadDashboard(){
         const grossMargin=revenue?Math.round(grossProfit/revenue*100)+'%':'—';
         const netMargin=revenue?Math.round(netProfit/revenue*100)+'%':'—';
         const cashCover=taxTotal?(cashInBank>=taxTotal?'<span style="color:#16a34a;font-weight:700">✓ Covered</span>':'<span style="color:#dc2626;font-weight:700">⚠ Shortfall</span>'):'—';
+
+        const ctEstRow=ctEst!==null
+            ?`<tr class="tax-est"><td><div class="tax-label">Corporation Tax<span class="est-badge">Estimate</span></div><div class="tax-sub">On FY-to-date profit of ${fmt(ytdProfit)} (before tax adjustments)</div></td><td>${fmt(ctEst,true)}</td></tr>`
+            :`<tr class="tax-est"><td><div class="tax-label">Corporation Tax<span class="est-badge">Estimate</span></div><div class="tax-sub">Disconnect &amp; sign in again to enable (new Xero permission)</div></td><td>—</td></tr>`;
+        const vatEstRow=vatEst!==null
+            ?`<tr class="tax-est"><td><div class="tax-label">VAT accruing<span class="est-badge">Estimate</span></div><div class="tax-sub">Quarter to date — 20% on sales less VAT-able costs</div></td><td>${fmt(vatEst,true)}</td></tr>`
+            :'';
+
+        const deadlineRows=[
+            vatDue?`<tr><td><div class="tax-label">VAT return &amp; payment</div><div class="tax-sub">Quarter ended ${fmtDate(vatDue.qEnd)} — assumes calendar VAT quarters</div></td><td class="${dueCls(vatDue.due,today)}">${fmtDate(vatDue.due)}</td></tr>`:'',
+            `<tr><td><div class="tax-label">PAYE / NI payment</div><div class="tax-sub">Tax month ended 5 ${payeDue.due.toLocaleString('en-GB',{month:'long'})} — electronic payment</div></td><td class="${dueCls(payeDue.due,today)}">${fmtDate(payeDue.due)}</td></tr>`,
+            ctDue?.pay?`<tr><td><div class="tax-label">Corporation Tax payment</div><div class="tax-sub">Year ended ${fmtDate(ctDue.pay.fyEnd)}</div></td><td class="${dueCls(ctDue.pay.date,today)}">${fmtDate(ctDue.pay.date)}</td></tr>`
+                :`<tr><td><div class="tax-label">Corporation Tax payment</div><div class="tax-sub">Disconnect &amp; sign in again to enable (new Xero permission)</div></td><td>—</td></tr>`,
+            ctDue?.file?`<tr><td><div class="tax-label">Company tax return (CT600)</div><div class="tax-sub">Year ended ${fmtDate(ctDue.file.fyEnd)}</div></td><td class="${dueCls(ctDue.file.date,today)}">${fmtDate(ctDue.file.date)}</td></tr>`:''
+        ].join('');
+
         document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
         document.getElementById('dashboard-content').innerHTML=`
             <div class="report-header"><div><div class="rh-firm">FLOW<span> Accounting &amp; Tax Advice</span></div><div class="rh-detail">${orgName}</div></div><div class="rh-right"><div class="rh-period">${monthName}</div><div><span class="rh-tag">Monthly Report</span></div></div></div>
@@ -302,11 +443,13 @@ async function loadDashboard(){
                 <div class="card ${netProfit>=0?'c-green':'c-amber'}"><div class="card-label">Net Profit</div><div class="card-value ${vc(netProfit)}">${fmt(netProfit)}</div><div class="card-mom ${momNet.cls}">${momNet.text}</div></div>
             </div>
             <div class="two-col">
-                <div class="panel"><div class="panel-title">Tax Liabilities <small>from balance sheet</small></div><table class="tax-table">
+                <div class="panel"><div class="panel-title">Tax Liabilities <small>balance sheet + estimates</small></div><table class="tax-table">
                     <tr><td><div class="tax-label">VAT</div><div class="tax-sub">Balance sheet liability</div></td><td>${fmt(vatLiab,true)}</td></tr>
+                    ${vatEstRow}
                     <tr><td><div class="tax-label">PAYE / NI</div><div class="tax-sub">Balance sheet liability</div></td><td>${fmt(payeLiab,true)}</td></tr>
                     <tr><td><div class="tax-label">Corporation Tax</div><div class="tax-sub">Balance sheet provision</div></td><td>${fmt(ctLiab,true)}</td></tr>
-                    <tr class="total-row"><td><strong>Total Tax Liabilities</strong></td><td>${fmt(taxTotal,true)}</td></tr>
+                    ${ctEstRow}
+                    <tr class="total-row"><td><strong>Total Tax Liabilities</strong>${usesEstimates?'<div class="tax-sub">Uses estimates where no balance sheet figure</div>':''}</td><td>${fmt(taxTotal,true)}</td></tr>
                 </table></div>
                 <div class="panel"><div class="panel-title">Performance Summary</div><table class="tax-table">
                     <tr><td><div class="tax-label">Gross Margin</div><div class="tax-sub">${monthName}</div></td><td>${grossMargin}</td></tr>
@@ -314,6 +457,10 @@ async function loadDashboard(){
                     <tr><td><div class="tax-label">Cash vs Tax Liabilities</div><div class="tax-sub">Coverage check</div></td><td>${cashCover}</td></tr>
                     <tr><td><div class="tax-label">Prior Month Revenue</div><div class="tax-sub">For comparison</div></td><td>${fmt(prevRevenue,true)}</td></tr>
                 </table></div>
+            </div>
+            <div class="panel"><div class="panel-title">Upcoming Tax Deadlines <small>as at ${fmtDate(today)}</small></div>
+                <table class="tax-table">${deadlineRows}</table>
+                <div class="panel-note">Dates shown in amber are due within 14 days. The VAT date assumes calendar-quarter VAT periods — if your VAT quarters differ, your actual deadline will too. Estimates are indicative only; speak to us before relying on them.</div>
             </div>
             <div class="panel"><div class="panel-title">Profit &amp; Loss <small>${monthName}</small></div>
                 <table class="pl-table"><thead><tr><th style="text-align:left;width:55%">Account</th><th>This Month</th><th>Year to Date</th></tr></thead><tbody>${plHtml}</tbody></table>
