@@ -414,7 +414,7 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
     <div class="table-card"><div class="table-wrap"><table>
       <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
       <thead><tr>
-        <th>Month</th><th class="r">Revenue</th><th class="r">Net Profit</th><th class="r">CT @ 19%*</th><th class="r">Cumulative CT</th>
+        <th>Month</th><th class="r">Revenue</th><th class="r">Net Profit</th><th class="r" id="ct-rate-header">CT @ 19%*</th><th class="r">Cumulative CT</th>
       </tr></thead>
       <tbody id="ct-body"></tbody>
       <tfoot><tr class="total-row">
@@ -542,6 +542,8 @@ if (ctSub) ctSub.innerHTML = `<ul style="list-style:none;padding:0;margin:0;line
 // Tiles
 const ctTileFY = document.getElementById('ct-tile-fy');
 if (ctTileFY) ctTileFY.textContent = effectivePct + '%';
+const ctRateHeader = document.getElementById('ct-rate-header');
+if (ctRateHeader) ctRateHeader.textContent = 'CT @ ' + effectivePct + '%*';
 const ctTileYTD = document.getElementById('ct-tile-ytd');
 if (ctTileYTD) ctTileYTD.textContent = '£' + confirmedProfitTotal.toLocaleString('en-GB');
 const ctTileYTDNote = document.getElementById('ct-tile-ytd-note');
