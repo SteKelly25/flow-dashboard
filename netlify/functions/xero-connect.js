@@ -29,13 +29,10 @@ const BASE_URL      = 'https://effulgent-dasik-65faf7.netlify.app';
 const REDIRECT_URI  = `${BASE_URL}/.netlify/functions/xero-connect`;
 
 const SCOPES = [
-  'openid',
-  'profile',
-  'email',
+  'offline_access',
   'accounting.transactions.read',
   'accounting.reports.read',
-  'accounting.settings.read',
-  'offline_access'
+  'accounting.settings.read'
 ].join(' ');
 
 function cors() {
