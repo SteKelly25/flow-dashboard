@@ -559,4 +559,105 @@ const estText = unreconciledNames.length > 0
   ? ` ${unreconciledNames.join(' and ')} are estimated using the average of the ${reconciled.length} confirmed months (£${Math.round(avgProfit).toLocaleString('en-GB')}/month) and will update as each month reconciles.`
   : '';
 noteEl.innerHTML = `<strong>&#42;&nbsp;Marginal rate of CT applies.</strong> Projected profits of <strong>£${Math.round(projectedTotal).toLocaleString('en-GB')}</strong> fall in the £50,000–£250,000 marginal relief band, giving an effective rate of <strong>${effectivePct}%</strong> rather than the standard 19%.${estText} No associated companies assumed.`;
+
+// ── Live Xero data ──────────────────────────────────────────────────────────
+// Fetches actual VAT payment history and CT payment history from Xero via
+// the xero-data Netlify function. Falls back gracefully if unavailable.
+
+const XERO_DATA_URL = '/.netlify/functions/xero-data?client=afb';
+
+// Status badge helper
+function liveStatusBadge(paid, date) {
+  if (paid) return `<span class="status paid">Paid${date ? ' ' + date : ''}</span>`;
+  return `<span class="status estimated">Not yet paid</span>`;
+}
+
+async function loadLiveXeroData() {
+  // Add a small "live" indicator to the page header while loading
+  const header = document.querySelector('.vat-hero-sub') || document.querySelector('.vat-hero-inner');
+  let indicator = document.getElementById('xero-live-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'xero-live-indicator';
+    indicator.style.cssText = 'font-size:11px;opacity:0.7;margin-top:6px;';
+    indicator.textContent = '⟳ Loading live Xero data…';
+    // Append to CT hero
+    const ctSub = document.getElementById('ct-hero-sub');
+    if (ctSub) ctSub.appendChild(indicator);
+  }
+
+  try {
+    const res  = await fetch(XERO_DATA_URL);
+    const data = await res.json();
+
+    if (data.error) {
+      indicator.textContent = '⚠ Live data unavailable — showing estimates';
+      return;
+    }
+
+    // ── VAT quarter tiles ──
+    // Map VAT payments by approximate date to quarter periods
+    // Quarter end dates for AFB (Nov year-end): Feb, May, Aug, Nov
+    const quarterEnds = {
+      'Q1': '2026-02-28', // Dec 25 – Feb 26
+      'Q2': '2026-05-31', // Mar 26 – May 26
+      'Q3': '2026-08-31', // Jun 26 – Aug 26
+      'Q4': '2026-11-30', // Sep 26 – Nov 26
+    };
+    const quarterDue = {
+      'Q1': '2026-04-07',
+      'Q2': '2026-07-07',
+      'Q3': '2026-10-07',
+      'Q4': '2027-01-07',
+    };
+
+    // Check each quarter — if a VAT payment exists on or before the due date, mark paid
+    const vatPmts = data.vatPayments || [];
+
+    ['Q1','Q2','Q3'].forEach(q => {
+      const due = quarterDue[q];
+      const payment = vatPmts.find(p => p.date && p.date <= new Date(due).toISOString().slice(0,10) && p.date >= quarterEnds[q === 'Q1' ? 'Q1' : q].slice(0,7) + '-01');
+      // Find the tile note for this quarter
+      const tiles = document.querySelectorAll('.tile');
+      tiles.forEach(tile => {
+        const label = tile.querySelector('.tile-label');
+        if (label && label.textContent.includes(q + ' ')) {
+          const note = tile.querySelector('.tile-note');
+          if (note && payment) {
+            note.innerHTML = `<span class="status paid">Paid</span> ${payment.date}`;
+          }
+        }
+      });
+    });
+
+    // ── CT payments ──
+    const ctPmts = data.ctPayments || [];
+    if (ctPmts.length > 0) {
+      // Show CT payments in the marginal note footnote area
+      const ctNote = document.getElementById('ct-marginal-note');
+      if (ctNote) {
+        const pmtLines = ctPmts.slice(0,5).map(p =>
+          `${p.date}: £${Math.abs(p.amount).toLocaleString('en-GB')}${p.reference ? ' — ' + p.reference : ''}`
+        ).join('<br>');
+        ctNote.innerHTML += `<br><br><strong>CT payments recorded in Xero:</strong><br>${pmtLines}`;
+      }
+    }
+
+    // ── VAT returns from MTD ──
+    const vatReturns = data.vatReturns || [];
+    // If we have MTD return data, we could overlay onto the VAT quarter breakdowns
+    // For now just update the indicator
+    const returnCount = vatReturns.length;
+    const pmtCount    = vatPmts.length + ctPmts.length;
+
+    indicator.textContent = `✓ Live Xero data loaded — ${returnCount} VAT return${returnCount !== 1 ? 's' : ''}, ${pmtCount} payment${pmtCount !== 1 ? 's' : ''} found · ${new Date(data.asOf).toLocaleString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
+    indicator.style.opacity = '0.6';
+
+  } catch (err) {
+    if (indicator) indicator.textContent = '⚠ Could not load live Xero data';
+  }
+}
+
+// Run on load
+loadLiveXeroData();
 </script>
