@@ -1,0 +1,575 @@
+<title>A Friendly Bunch — VAT & CT Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap">
+
+<style>
+:root {
+  --bg: #f5f4f2;
+  --surface: #ffffff;
+  --surface2: #f0eeeb;
+  --ink: #111118;
+  --ink2: #5a5a6a;
+  --border: #dddbd6;
+  --purple: #8601FF;
+  --dark-blue: #1C0D75;
+  --blue: #4A34FF;
+  --pink: #FF42D9;
+  --header-bg: #1C0D75;
+  --paid-bg: #e6f4ec;
+  --paid-ink: #1a6e3c;
+  --est-bg: #ede8ff;
+  --est-ink: #5800cc;
+  --warn-bg: #fff3cd;
+  --warn-ink: #7a5500;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0c18; --surface: #17162a; --surface2: #1e1c32;
+    --ink: #e8e6f4; --ink2: #9090aa; --border: #2a2840;
+    --paid-bg: #0d2a1a; --paid-ink: #4dc87a;
+    --est-bg: #1e1040; --est-ink: #b080ff;
+    --warn-bg: #2a1f00; --warn-ink: #ffc940;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0c18; --surface: #17162a; --surface2: #1e1c32;
+  --ink: #e8e6f4; --ink2: #9090aa; --border: #2a2840;
+  --paid-bg: #0d2a1a; --paid-ink: #4dc87a;
+  --est-bg: #1e1040; --est-ink: #b080ff;
+  --warn-bg: #2a1f00; --warn-ink: #ffc940;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Work Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header */
+.header-band {
+  background: var(--header-bg);
+  margin-left: max(-16px, calc(-1 * env(safe-area-inset-left, 0px)));
+  margin-right: max(-16px, calc(-1 * env(safe-area-inset-right, 0px)));
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 24px;
+  margin-bottom: 32px;
+}
+.header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand-pill { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink); font-weight: 600; margin-bottom: 8px; }
+.header-title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.header-sub { font-size: 13px; color: rgba(255,255,255,0.5); }
+.flow-badge { width: 40px; height: 40px; background: var(--purple); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.flow-badge svg { width: 22px; height: 22px; fill: #fff; }
+
+.wrap { max-width: 960px; margin: 0 auto; }
+
+/* Tab nav */
+.tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+.tab-btn {
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: none;
+  color: var(--ink2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  letter-spacing: 0.3px;
+  transition: color 0.15s;
+}
+.tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Section label */
+.section-head { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); font-weight: 600; margin-bottom: 12px; }
+
+/* Quarter block */
+.quarter-block { margin-bottom: 28px; }
+.quarter-label {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.q-pill {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+}
+.q-pill.confirmed { background: var(--paid-bg); color: var(--paid-ink); }
+.q-pill.estimated { background: var(--est-bg); color: var(--est-ink); }
+.q-title { font-size: 12px; font-weight: 600; color: var(--ink2); }
+
+/* Table card */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 0; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; table-layout: fixed; }
+col.col-month { width: 28%; }
+col.col-val   { width: 18%; }
+thead th {
+  padding: 10px 14px; text-align: left;
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  font-weight: 600; color: var(--ink2); background: var(--surface2);
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+thead th.r { text-align: right; }
+tbody td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--ink); white-space: nowrap; }
+tbody td.r, tfoot td.r { text-align: right; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) td { background: var(--surface2); }
+tbody tr.m-row td { }
+tbody tr.m1 td { }
+tbody tr.m-partial td { color: var(--ink2); font-style: italic; }
+tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
+
+.input-col { color: #b8001a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .input-col { color: #ff6070; }
+}
+:root[data-theme="dark"] .input-col { color: #ff6070; }
+
+.net-col { font-weight: 600; }
+.running-col { color: var(--purple); font-weight: 700; }
+.due-col { color: var(--ink2); font-size: 12px; }
+
+/* Total row */
+.total-row { background: var(--dark-blue) !important; }
+.total-row td { color: #fff !important; font-weight: 700; padding: 11px 14px; border-top: 2px solid var(--purple); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.total-row .running-col { color: var(--pink) !important; }
+.total-row .ct-col { color: var(--pink) !important; }
+.total-row .cum-col { color: var(--purple) !important; }
+
+/* Status badge */
+.status { display: inline-block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+.status.paid { background: var(--paid-bg); color: var(--paid-ink); }
+.status.estimated { background: var(--est-bg); color: var(--est-ink); }
+.status.partial { background: var(--warn-bg); color: var(--warn-ink); }
+
+/* Month badge inline */
+.mbadge { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.mbadge.partial { background: var(--warn-bg); color: var(--warn-ink); }
+.mbadge.proj { background: var(--est-bg); color: var(--est-ink); }
+
+/* Progressive indicator strip */
+.progress-strip {
+  display: flex; align-items: center; gap: 0;
+  font-size: 11px; font-weight: 600; margin-bottom: 10px;
+}
+.prog-step {
+  padding: 5px 12px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--ink2); border-right: none;
+}
+.prog-step:first-child { border-radius: 6px 0 0 6px; }
+.prog-step:last-child { border-radius: 0 6px 6px 0; border-right: 1px solid var(--border); }
+.prog-step.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+/* Advisory */
+.advisory {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--purple); border-radius: 0 8px 8px 0;
+  padding: 14px 18px; font-size: 12px; line-height: 1.65; color: var(--ink2);
+  margin-top: 16px;
+}
+.advisory + .advisory { margin-top: 10px; }
+.advisory.warn { border-left-color: #d47a00; }
+.advisory strong { color: var(--ink); font-weight: 600; }
+
+/* CT table columns — mirror VAT colour logic */
+.ct-col { color: var(--pink); font-weight: 700; }
+.cum-col { color: var(--purple); font-weight: 700; }
+
+/* Summary tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 24px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.tile-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); font-weight: 600; margin-bottom: 8px; }
+.tile-value { font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; }
+.tile-value.accent { color: var(--purple); }
+.tile-value.warn { color: #d47a00; }
+.tile-note { font-size: 11px; color: var(--ink2); margin-top: 5px; }
+
+.footer { font-size: 11px; color: var(--ink2); line-height: 1.6; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 24px; }
+.footer a { color: var(--purple); text-decoration: none; }
+
+/* VAT hero callout */
+.vat-hero {
+  background: var(--header-bg);
+  margin-left: max(-16px, calc(-1 * env(safe-area-inset-left, 0px)));
+  margin-right: max(-16px, calc(-1 * env(safe-area-inset-right, 0px)));
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: 22px;
+  margin-bottom: 24px;
+}
+.vat-hero-inner {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.vat-hero-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.vat-hero-sub { font-size: 12px; color: rgba(255,255,255,0.5); }
+.vat-hero-amount {
+  font-size: 42px; font-weight: 700; color: var(--pink);
+  flex-shrink: 0; letter-spacing: -1px;
+}
+</style>
+
+<!-- Header -->
+<div class="header-band">
+  <div class="header-inner">
+    <div style="flex:1;min-width:0;">
+      <!-- Flow full wordmark (Flow | Accounting & Tax Advice) in white -->
+      <svg viewBox="0 0 1128.37 150" height="46" style="display:block;margin-bottom:10px;" xmlns="http://www.w3.org/2000/svg" fill="var(--pink)" stroke="none">
+        <path d="M92.32,24.05H16V66.61H75.53v15H16v59.35H0V9.06H92.32Z"/>
+        <path d="M137.87,126H213.4v15H121.88V9.06h16Z"/>
+        <path d="M409.22,140.94l-39-131.88h16.59l32.57,117.29,31-117.29h18.18l31,117.69L532.1,9.06h15.79L509.12,140.94H489.34L466,55.42l-6.79-29.77H459l-6.8,29.77L429,140.94Z"/>
+        <polygon points="307.81 11.26 280.76 0 280.76 10.7 291.87 15.02 280.76 19.21 280.76 30.22 307.81 18.96 307.81 11.26"/>
+        <polygon points="258.21 88.53 246.96 61.47 239.25 61.47 228 88.53 238.69 88.53 243.01 77.42 247.21 88.53 258.21 88.53"/>
+        <polygon points="280.86 138.75 307.92 150 307.92 139.3 296.81 134.98 307.92 130.79 307.92 119.78 280.86 131.04 280.86 138.75"/>
+        <polygon points="330.46 61.47 341.72 88.53 349.43 88.53 360.68 61.47 349.99 61.47 345.66 72.58 341.47 61.47 330.46 61.47"/>
+        <polygon points="244.34 109.21 255.51 136.3 263.08 128.74 258.28 117.83 269.1 122.72 276.88 114.94 249.79 103.76 244.34 109.21"/>
+        <polygon points="333.82 113.01 338.71 102.19 330.93 94.41 319.76 121.5 325.2 126.95 352.3 115.78 344.73 108.21 333.82 113.01"/>
+        <polygon points="254.86 36.99 249.97 47.8 257.75 55.59 268.92 28.5 263.48 23.05 236.38 34.22 243.95 41.79 254.86 36.99"/>
+        <polygon points="344.34 40.79 333.16 13.7 325.6 21.26 330.4 32.17 319.58 27.28 311.8 35.06 338.89 46.24 344.34 40.79"/>
+        <line x1="619.54" y1="9.06" x2="619.54" y2="140.99" stroke="var(--pink)" stroke-width="2" stroke-miterlimit="10"/>
+        <path d="M688.08,65.28l18.86-51.65h12.91l18.87,51.65h-11.2L715.71,30.14l-2.35-7.83h-.16L711,30l-11.9,35.3Zm11.11-12.6v-8h28.33v8Z"/>
+        <path d="M759,25.36a22.94,22.94,0,0,1,8.88,1.53A15.4,15.4,0,0,1,773.74,31a15.91,15.91,0,0,1,3.17,5.83l-10,3.6a10.25,10.25,0,0,0-2.66-5.32,7,7,0,0,0-5.09-1.8,9.11,9.11,0,0,0-5.09,1.37,8.43,8.43,0,0,0-3.2,4.15,18.77,18.77,0,0,0-1.1,6.92,18.25,18.25,0,0,0,1.13,6.89,8.45,8.45,0,0,0,3.29,4.07,9.4,9.4,0,0,0,5.05,1.33,9,9,0,0,0,4-.82,7,7,0,0,0,2.7-2.39,9.57,9.57,0,0,0,1.45-3.76l9.7,3.13a14.4,14.4,0,0,1-3.2,6.19,15.83,15.83,0,0,1-6,4.14,24.82,24.82,0,0,1-19.18-.94,17,17,0,0,1-7.12-7,22.39,22.39,0,0,1-2.5-11,22.35,22.35,0,0,1,2.5-11,17.09,17.09,0,0,1,7.05-7A21.68,21.68,0,0,1,759,25.36Z"/>
+        <path d="M800,25.36a23,23,0,0,1,8.89,1.53A15.28,15.28,0,0,1,814.74,31a15.79,15.79,0,0,1,3.18,5.83l-10,3.6a10.25,10.25,0,0,0-2.66-5.32,7.06,7.06,0,0,0-5.09-1.8,9.11,9.11,0,0,0-5.09,1.37,8.39,8.39,0,0,0-3.21,4.15,19,19,0,0,0-1.09,6.92,18.25,18.25,0,0,0,1.13,6.89,8.45,8.45,0,0,0,3.29,4.07,9.37,9.37,0,0,0,5.05,1.33,9,9,0,0,0,4-.82,7,7,0,0,0,2.7-2.39,9.73,9.73,0,0,0,1.45-3.76l9.7,3.13a14.31,14.31,0,0,1-3.21,6.19,15.71,15.71,0,0,1-6,4.14,24.82,24.82,0,0,1-19.18-.94,16.89,16.89,0,0,1-7.12-7,22.39,22.39,0,0,1-2.5-11,22.35,22.35,0,0,1,2.5-11,17.13,17.13,0,0,1,7-7A21.74,21.74,0,0,1,800,25.36Z"/>
+        <path d="M841.08,25.36a21.68,21.68,0,0,1,10.45,2.43,17.43,17.43,0,0,1,7,7,22,22,0,0,1,2.54,11,22.09,22.09,0,0,1-2.54,10.92,17.32,17.32,0,0,1-7,7,23.6,23.6,0,0,1-20.86,0,17.17,17.17,0,0,1-7.08-7A22.09,22.09,0,0,1,821,45.71a22,22,0,0,1,2.55-11,17.28,17.28,0,0,1,7.08-7A21.74,21.74,0,0,1,841.08,25.36Zm0,8A8.91,8.91,0,0,0,836,34.72a8.53,8.53,0,0,0-3.17,4.11,18.65,18.65,0,0,0-1.09,6.88,18.71,18.71,0,0,0,1.09,6.89A8.53,8.53,0,0,0,836,56.71a9,9,0,0,0,5.05,1.37,8.86,8.86,0,0,0,5-1.37,8.53,8.53,0,0,0,3.17-4.11,18.71,18.71,0,0,0,1.09-6.89,18.65,18.65,0,0,0-1.09-6.88,8.53,8.53,0,0,0-3.17-4.11A8.78,8.78,0,0,0,841.08,33.35Z"/>
+        <path d="M880.6,66.06a16.92,16.92,0,0,1-7-1.41,10.86,10.86,0,0,1-5-4.5,15.48,15.48,0,0,1-1.84-8v-26h10.72v23.4q0,4.53,1.88,6.3a7.62,7.62,0,0,0,5.4,1.76A9.16,9.16,0,0,0,888,57a7.47,7.47,0,0,0,2.78-1.84,8.88,8.88,0,0,0,1.91-3.25,14.19,14.19,0,0,0,.71-4.73V26.15h10.72V65.28h-9.55l-.39-6.81a12.78,12.78,0,0,1-5.36,5.75A17,17,0,0,1,880.6,66.06Z"/>
+        <path d="M912.22,65.28V26.15h9.62l.63,11.74-1.33-1.26a16,16,0,0,1,3-6.33,12.52,12.52,0,0,1,5-3.72,16.74,16.74,0,0,1,6.46-1.22,16.19,16.19,0,0,1,7.24,1.57,11.71,11.71,0,0,1,5,4.73,15.74,15.74,0,0,1,1.84,8V65.28H938.91V42.66c0-3.34-.66-5.65-2-6.93a7,7,0,0,0-5.09-1.91,9.31,9.31,0,0,0-4.26,1,8,8,0,0,0-3.37,3.41,13,13,0,0,0-1.29,6.26V65.28Z"/>
+        <path d="M983.59,26.15v8H953.15v-8Zm-12.52-12V52.52a5.23,5.23,0,0,0,1.45,4.11,5.71,5.71,0,0,0,4,1.29,8.92,8.92,0,0,0,6.1-2.19l1.72,7.12a14,14,0,0,1-4.69,2.35,20.38,20.38,0,0,1-6,.86,19,19,0,0,1-6.92-1.17,9.66,9.66,0,0,1-4.7-3.76,12.48,12.48,0,0,1-1.68-6.89V17.15Z"/>
+        <path d="M993.14,20.51a7.36,7.36,0,0,1-5-1.45,5.35,5.35,0,0,1-1.65-4.26,5.46,5.46,0,0,1,1.65-4.34,9.38,9.38,0,0,1,10,0,5.49,5.49,0,0,1,1.64,4.34,5.38,5.38,0,0,1-1.64,4.26A7.4,7.4,0,0,1,993.14,20.51Zm5.32,5.64V65.28H987.74V26.15Z"/>
+        <path d="M1006.68,65.28V26.15h9.62l.63,11.74-1.33-1.26a15.77,15.77,0,0,1,3-6.33,12.45,12.45,0,0,1,5-3.72,16.74,16.74,0,0,1,6.46-1.22,16.22,16.22,0,0,1,7.24,1.57,11.71,11.71,0,0,1,5,4.73,15.74,15.74,0,0,1,1.84,8V65.28h-10.73V42.66q0-5-1.95-6.93a7,7,0,0,0-5.09-1.91,9.31,9.31,0,0,0-4.26,1,8,8,0,0,0-3.37,3.41,13,13,0,0,0-1.29,6.26V65.28Z"/>
+        <path d="M1075.23,57.92q6.35,0,9.78,2.74a9.24,9.24,0,0,1,3.45,7.67,11.39,11.39,0,0,1-2.58,7.55,15.79,15.79,0,0,1-7.24,4.66,33.93,33.93,0,0,1-10.76,1.56c-6.74,0-11.65-.94-14.76-2.81s-4.65-4.33-4.65-7.36a7,7,0,0,1,2.46-5.4q2.46-2.19,8.18-2.43l-.39,1.26a12,12,0,0,1-6.22-2.7,7.14,7.14,0,0,1-2.16-5.52,7.35,7.35,0,0,1,2.78-5.91,13.21,13.21,0,0,1,7.56-2.7l4.69,2.19h-1.09c-2.25.16-3.83.61-4.74,1.37a3.3,3.3,0,0,0-1.37,2.54,2.73,2.73,0,0,0,1.29,2.47,6.93,6.93,0,0,0,3.72.82ZM1068,25.36a25.66,25.66,0,0,1,9.51,1.61,13.57,13.57,0,0,1,6.18,4.58,11.77,11.77,0,0,1,2.16,7.12,11.65,11.65,0,0,1-2.16,7,13.5,13.5,0,0,1-6.18,4.58,25.66,25.66,0,0,1-9.51,1.6q-8.68,0-13.26-3.56a11.59,11.59,0,0,1-4.58-9.66,11.83,11.83,0,0,1,2.15-7.12,13.6,13.6,0,0,1,6.14-4.58A25.58,25.58,0,0,1,1068,25.36ZM1068,74.75a26.4,26.4,0,0,0,6.7-.71,10.19,10.19,0,0,0,3.91-1.8,3.16,3.16,0,0,0,1.29-2.42,2.87,2.87,0,0,0-1.17-2.39q-1.18-.9-4.23-.9h-13.23a4.88,4.88,0,0,0-3.09.94,3.08,3.08,0,0,0-1.21,2.58q0,2.19,2.93,3.45A21.29,21.29,0,0,0,1068,74.75Zm.08-42.66a7.68,7.68,0,0,0-5.16,1.73,5.9,5.9,0,0,0-2,4.77,6,6,0,0,0,2,4.81,7.55,7.55,0,0,0,5.16,1.76,7.44,7.44,0,0,0,5.13-1.76,6.07,6.07,0,0,0,2-4.81,6,6,0,0,0-2-4.77A7.57,7.57,0,0,0,1068,32.09Zm20-15.26,1.25,7.67a5.33,5.33,0,0,1-.67,0c-.23,0-.48,0-.74,0a7.9,7.9,0,0,0-5.4,1.6,5.61,5.61,0,0,0-1.8,4.42l-4.38-1.8a13.63,13.63,0,0,1,1.25-5.83,10.24,10.24,0,0,1,3.72-4.34,10.36,10.36,0,0,1,5.91-1.65h.86Z"/>
+        <path d="M707.33,141a23.53,23.53,0,0,1-9.27-1.68,13.52,13.52,0,0,1-6.1-4.85,13.25,13.25,0,0,1-2.16-7.63,16.85,16.85,0,0,1,.63-4.54,12.6,12.6,0,0,1,2.23-4.35,16.42,16.42,0,0,1,4.38-3.79,23.83,23.83,0,0,1,7.08-2.74l2.74-1.1a40.8,40.8,0,0,0,5.09-3.4,10.17,10.17,0,0,0,2.7-3.13,7.84,7.84,0,0,0,.82-3.64,4.59,4.59,0,0,0-1.41-3.56,5.34,5.34,0,0,0-3.75-1.29,5.15,5.15,0,0,0-4,1.52,5.46,5.46,0,0,0-1.37,3.8,7.76,7.76,0,0,0,.43,2.58,13.12,13.12,0,0,0,1.68,3.09c.83,1.23,2.07,2.83,3.72,4.82s3.84,4.56,6.61,7.74,5,5.69,6.85,7.67A39.75,39.75,0,0,0,729,131a11.43,11.43,0,0,0,3.84,2,10.94,10.94,0,0,0,4.1.27L735.66,141a24.18,24.18,0,0,1-5.2-.51,15,15,0,0,1-4.82-2.11,39.67,39.67,0,0,1-5.83-4.81q-3.31-3.21-8.09-8.61-5-5.48-8.18-9.16a66.35,66.35,0,0,1-4.9-6.26,20.48,20.48,0,0,1-2.42-4.7,13.94,13.94,0,0,1-.71-4.46,12.55,12.55,0,0,1,1.57-6,12,12,0,0,1,4.85-4.74,17.27,17.27,0,0,1,8.46-1.84A16.47,16.47,0,0,1,718,89.34a10.93,10.93,0,0,1,4.54,4.15,11.13,11.13,0,0,1,1.53,5.79,13.67,13.67,0,0,1-1.33,6,14.07,14.07,0,0,1-4.42,5.08,31.81,31.81,0,0,1-8.42,4.19l-2.5,1.25a28.48,28.48,0,0,0-5,3.13,8.4,8.4,0,0,0-2.5,3.17,10.17,10.17,0,0,0-.71,4,6.54,6.54,0,0,0,1.26,4,8,8,0,0,0,3.36,2.66,11.79,11.79,0,0,0,4.85.94,15.6,15.6,0,0,0,6.73-1.33,21.35,21.35,0,0,0,5.32-3.6l1.18-1.33a25.44,25.44,0,0,0,2.62-6.18,24.21,24.21,0,0,0,.74-7.9l7.59.31a27.13,27.13,0,0,1-1.36,9.55,22.36,22.36,0,0,1-4.66,8l-1.88,1.8a19.63,19.63,0,0,1-7.16,5.87A23.3,23.3,0,0,1,707.33,141Z"/>
+        <path d="M800.7,88.56v8.68H783.4v43H772.6v-43H755.23V88.56Z"/>
+        <path d="M820.34,115.24a7,7,0,0,0-1.92-5.24,6.91,6.91,0,0,0-5-1.88,8.84,8.84,0,0,0-5.09,1.49,8.63,8.63,0,0,0-3.21,4.93l-9.16-2.82a14.12,14.12,0,0,1,5.83-8.29q4.5-3.14,12.09-3.14a23.15,23.15,0,0,1,9,1.61,13,13,0,0,1,6,4.81,14.21,14.21,0,0,1,2.15,8.06v15.89q0,3,2.82,3a8,8,0,0,0,2.51-.39l-.63,6.66a11.45,11.45,0,0,1-5.09,1,12.35,12.35,0,0,1-4.93-.94,7.48,7.48,0,0,1-3.44-2.85A8.62,8.62,0,0,1,821,132.3V132l1.87-.31a8.82,8.82,0,0,1-2.58,5,14.16,14.16,0,0,1-5.12,3.17,18.12,18.12,0,0,1-6.23,1.09,17.71,17.71,0,0,1-6.88-1.21,9.72,9.72,0,0,1-4.46-3.56,10.18,10.18,0,0,1-1.57-5.79,9.6,9.6,0,0,1,2.82-7.16,15.29,15.29,0,0,1,8.06-3.8l14.71-3-.08,6.66L812.12,125a11.75,11.75,0,0,0-4,1.44,3.26,3.26,0,0,0-1.37,2.94,3.4,3.4,0,0,0,1.45,3,5.89,5.89,0,0,0,3.48,1,13.18,13.18,0,0,0,3.21-.39,8.77,8.77,0,0,0,2.82-1.25,5.89,5.89,0,0,0,2-2.35,8.5,8.5,0,0,0,.7-3.6Z"/>
+        <path d="M877.16,101.08l-15.11,21-3.21-.23-11.42,18.31H835.29L851.49,118l3,.39L865,101.08Zm-28.65,0,10.33,17.14,2.9-.08,15.65,22.07H865l-10.72-17.53-3.14-.31L836,101.08Z"/>
+        <path d="M893.51,140.21l18.87-51.65h12.91l18.86,51.65H933l-11.82-35.14-2.35-7.83h-.15l-2.2,7.67-11.89,35.3Zm11.12-12.6v-8H933v8Z"/>
+        <path d="M961.44,141a15.65,15.65,0,0,1-8.64-2.43,16.14,16.14,0,0,1-5.95-7,25.14,25.14,0,0,1-2.15-10.88A24.75,24.75,0,0,1,947,109.65a16.67,16.67,0,0,1,6.15-7,16.3,16.3,0,0,1,8.72-2.39,12.45,12.45,0,0,1,8.54,3,13.87,13.87,0,0,1,4.38,7.67l-1,1.25V83.94h10.72v56.27h-9.62l-.71-11.9,1.33.63a14.27,14.27,0,0,1-2.5,6.38A13.45,13.45,0,0,1,968,139.5,14.56,14.56,0,0,1,961.44,141Zm3.13-8.22a8.21,8.21,0,0,0,4.86-1.44,9.36,9.36,0,0,0,3.16-4.27,17.92,17.92,0,0,0,1.14-6.73,16.58,16.58,0,0,0-1.1-6.38,8.9,8.9,0,0,0-3.13-4,8.14,8.14,0,0,0-4.77-1.41,8.29,8.29,0,0,0-6.85,3.09q-2.46,3.11-2.46,9c0,4,.8,7,2.42,9A8.08,8.08,0,0,0,964.57,132.77Z"/>
+        <path d="M1018.26,101.08h11.11l-14.87,39.13h-12.36l-14.87-39.13H998.7l9.7,30.91Z"/>
+        <path d="M1037.59,95.44a7.45,7.45,0,0,1-5-1.44,5.42,5.42,0,0,1-1.64-4.27,5.49,5.49,0,0,1,1.64-4.34,9.38,9.38,0,0,1,10,0,5.49,5.49,0,0,1,1.64,4.34A5.42,5.42,0,0,1,1042.6,94,7.45,7.45,0,0,1,1037.59,95.44Zm5.32,5.64v39.13h-10.72V101.08Z"/>
+        <path d="M1068.89,100.29a23,23,0,0,1,8.89,1.53,15.4,15.4,0,0,1,5.87,4.15,15.91,15.91,0,0,1,3.17,5.83l-10,3.6a10.25,10.25,0,0,0-2.66-5.32,7,7,0,0,0-5.09-1.8,9.19,9.19,0,0,0-5.09,1.37,8.43,8.43,0,0,0-3.2,4.15,19,19,0,0,0-1.1,6.92,18.25,18.25,0,0,0,1.13,6.89,8.4,8.4,0,0,0,3.29,4.07,9.37,9.37,0,0,0,5.05,1.33,9,9,0,0,0,4-.82,7,7,0,0,0,2.7-2.39,9.57,9.57,0,0,0,1.45-3.76l9.7,3.13a14.31,14.31,0,0,1-3.21,6.19,15.71,15.71,0,0,1-6,4.14,24.82,24.82,0,0,1-19.18-.94,17,17,0,0,1-7.12-7,22.39,22.39,0,0,1-2.5-11,22.35,22.35,0,0,1,2.5-11,17.09,17.09,0,0,1,7-7A21.67,21.67,0,0,1,1068.89,100.29Z"/>
+        <path d="M1110.29,141a22.63,22.63,0,0,1-10.76-2.43,17,17,0,0,1-7.08-7,22.39,22.39,0,0,1-2.5-11,22.35,22.35,0,0,1,2.5-11,17.15,17.15,0,0,1,7-7,21.31,21.31,0,0,1,10.29-2.43,19.94,19.94,0,0,1,10.1,2.39,16.11,16.11,0,0,1,6.34,6.5,19.58,19.58,0,0,1,2.19,9.35c0,1,0,2-.08,3s-.13,1.78-.23,2.51h-31.23v-7.44h26.53l-5.16,1.88c0-3.29-.75-5.82-2.23-7.59a7.78,7.78,0,0,0-6.3-2.66,9.15,9.15,0,0,0-5.13,1.41,8.59,8.59,0,0,0-3.25,4.19,19.23,19.23,0,0,0-1.09,7,16.75,16.75,0,0,0,1.21,6.85,8.7,8.7,0,0,0,3.44,4,11.87,11.87,0,0,0,10.92,0,9,9,0,0,0,3.29-3.68l8.53,3.29a13.74,13.74,0,0,1-3.8,5.24,17.36,17.36,0,0,1-6,3.33A24.21,24.21,0,0,1,1110.29,141Z"/>
+      </svg>
+      <div class="header-title">A Friendly Bunch Ltd</div>
+      <div class="header-sub" style="color:rgba(255,255,255,0.75);font-size:15px;font-weight:500;margin-bottom:4px;">Corporation Tax &amp; VAT Estimates</div>
+      <div class="header-sub">Accounting year ending 30 November 2026 &nbsp;·&nbsp; Updated 24 October 2026</div>
+    </div>
+    <!-- Flow starburst badge on right -->
+    <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg viewBox="228 0 133 150" style="width:120px;height:120px;" xmlns="http://www.w3.org/2000/svg" fill="#FF42D9">
+        <polygon points="307.81 11.26 280.76 0 280.76 10.7 291.87 15.02 280.76 19.21 280.76 30.22 307.81 18.96 307.81 11.26"/>
+        <polygon points="258.21 88.53 246.96 61.47 239.25 61.47 228 88.53 238.69 88.53 243.01 77.42 247.21 88.53 258.21 88.53"/>
+        <polygon points="280.86 138.75 307.92 150 307.92 139.3 296.81 134.98 307.92 130.79 307.92 119.78 280.86 131.04 280.86 138.75"/>
+        <polygon points="330.46 61.47 341.72 88.53 349.43 88.53 360.68 61.47 349.99 61.47 345.66 72.58 341.47 61.47 330.46 61.47"/>
+        <polygon points="244.34 109.21 255.51 136.3 263.08 128.74 258.28 117.83 269.1 122.72 276.88 114.94 249.79 103.76 244.34 109.21"/>
+        <polygon points="333.82 113.01 338.71 102.19 330.93 94.41 319.76 121.5 325.2 126.95 352.3 115.78 344.73 108.21 333.82 113.01"/>
+        <polygon points="254.86 36.99 249.97 47.8 257.75 55.59 268.92 28.5 263.48 23.05 236.38 34.22 243.95 41.79 254.86 36.99"/>
+        <polygon points="344.34 40.79 333.16 13.7 325.6 21.26 330.4 32.17 319.58 27.28 311.8 35.06 338.89 46.24 344.34 40.79"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ct')">Corporation Tax</button>
+    <button class="tab-btn" onclick="switchTab('vat')">VAT Estimates</button>
+  </div>
+
+  <!-- ===================== VAT TAB ===================== -->
+  <div class="tab-panel" id="tab-vat">
+
+    <!-- Hero VAT callout -->
+    <div class="vat-hero">
+      <div class="vat-hero-inner">
+        <div>
+          <div class="brand-pill" style="color:var(--pink);margin-bottom:6px;font-size:19px;font-weight:700;letter-spacing:0.3px;text-transform:none;">VAT — Q/E 30 November 2026</div>
+          <div class="vat-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated cumulative VAT to end of September 2026</div>
+          <div class="vat-hero-sub" id="vat-hero-sub"></div>
+        </div>
+        <div class="vat-hero-amount">£2,250</div>
+      </div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="tile-label">Q4 (Sep 26–Nov 26)</div><div class="tile-value accent">£2,250</div><div class="tile-note"><span class="status estimated">In progress</span> due 7 Jan 2027</div></div>
+      <div class="tile"><div class="tile-label">Q3 (Jun 26–Aug 26)</div><div class="tile-value">£7,928</div><div class="tile-note"><span class="status paid">Paid</span> 7 Oct 2026</div></div>
+      <div class="tile"><div class="tile-label">Q2 (Mar 26–May 26)</div><div class="tile-value">£6,881</div><div class="tile-note"><span class="status paid">Paid</span> 7 Jul 2026</div></div>
+      <div class="tile"><div class="tile-label">Q1 (Dec 25–Feb 26)</div><div class="tile-value">£6,388</div><div class="tile-note"><span class="status paid">Paid</span> 7 Apr 2026</div></div>
+    </div>
+
+    <div class="section-head" style="margin-top:8px;">VAT Payment Summary</div>
+    <div class="table-card" style="margin-bottom:28px;"><div class="table-wrap"><table>
+      <colgroup><col style="width:22%"><col style="width:22%"><col style="width:18%"><col style="width:18%"><col style="width:20%"></colgroup>
+      <thead><tr>
+        <th>Quarter</th><th>Period</th><th class="r">Amount</th><th>Due Date</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Q4</td><td>Sep – Nov 2026</td><td class="r">£2,250 est.</td><td>7 Jan 2027</td><td><span class="status estimated">In progress</span></td></tr>
+        <tr><td>Q3</td><td>Jun – Aug 2026</td><td class="r">£7,928</td><td>7 Oct 2026</td><td><span class="status paid">Paid</span></td></tr>
+        <tr><td>Q2</td><td>Mar – May 2026</td><td class="r">£6,881</td><td>7 Jul 2026</td><td><span class="status paid">Paid</span></td></tr>
+        <tr><td>Q1</td><td>Dec 2025 – Feb 2026</td><td class="r">£6,388</td><td>7 Apr 2026</td><td><span class="status paid">Paid</span></td></tr>
+      </tbody>
+    </table></div></div>
+
+    <!-- Q4 IN PROGRESS -->
+    <div class="quarter-block">
+      <div class="quarter-label">
+        <span class="q-pill estimated">Q4 — In Progress</span>
+        <span class="q-title">Sep – Nov 2026 &nbsp;·&nbsp; Quarter end 30 Nov 2026 &nbsp;·&nbsp; Due 7 January 2027</span>
+      </div>
+      <div class="table-card"><div class="table-wrap"><table>
+        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+        <thead><tr>
+          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>September 2026</td><td class="r">£2,401.20</td><td class="r input-col">(£151.56)</td><td class="r net-col">£2,249.64</td><td class="r running-col">£2,249.64</td></tr>
+        </tbody>
+        <tfoot><tr class="total-row"><td><strong>Q4 — Due 7 January 2027</strong></td><td class="r">£2,401.20</td><td class="r">(£151.56)</td><td class="r">£2,249.64</td><td class="r running-col">£2,250</td></tr></tfoot>
+      </table></div></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quarter-block">
+      <div class="quarter-label">
+        <span class="q-pill confirmed">Q3</span>
+        <span class="q-title">Jun – Aug 2026 &nbsp;·&nbsp; Quarter end 31 Aug 2026 &nbsp;·&nbsp; Due 7 October 2026</span>
+      </div>
+      <div class="table-card"><div class="table-wrap"><table>
+        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+        <thead><tr>
+          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>June 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£208.45)</td><td class="r net-col">£2,145.15</td><td class="r running-col">£2,145.15</td></tr>
+          <tr><td>July 2026</td><td class="r">£3,838.85</td><td class="r input-col">(£133.92)</td><td class="r net-col">£3,704.93</td><td class="r running-col">£5,850.08</td></tr>
+          <tr><td>August 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£275.23)</td><td class="r net-col">£2,078.37</td><td class="r running-col">£7,928.45</td></tr>
+        </tbody>
+        <tfoot><tr class="total-row"><td><strong>Q3 — Paid 7 October 2026</strong></td><td class="r">£8,546.05</td><td class="r">(£617.60)</td><td class="r">£7,928.45</td><td class="r running-col">£7,928.45</td></tr></tfoot>
+      </table></div></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quarter-block">
+      <div class="quarter-label">
+        <span class="q-pill confirmed">Q2</span>
+        <span class="q-title">Mar – May 2026 &nbsp;·&nbsp; Quarter end 31 May 2026 &nbsp;·&nbsp; Due 7 July 2026</span>
+      </div>
+      <div class="table-card"><div class="table-wrap"><table>
+        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+        <thead><tr>
+          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>March 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£131.25)</td><td class="r net-col">£2,222.35</td><td class="r running-col">£2,222.35</td></tr>
+          <tr><td>April 2026</td><td class="r">£2,433.35</td><td class="r input-col">(£144.80)</td><td class="r net-col">£2,288.55</td><td class="r running-col">£4,510.90</td></tr>
+          <tr><td>May 2026</td><td class="r">£2,588.37</td><td class="r input-col">(£218.73)</td><td class="r net-col">£2,369.64</td><td class="r running-col">£6,880.54</td></tr>
+        </tbody>
+        <tfoot><tr class="total-row"><td><strong>Q2 — Paid 7 July 2026</strong></td><td class="r">£7,375.32</td><td class="r">(£494.78)</td><td class="r">£6,880.54</td><td class="r running-col">£6,880.54</td></tr></tfoot>
+      </table></div></div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quarter-block">
+      <div class="quarter-label">
+        <span class="q-pill confirmed">Q1</span>
+        <span class="q-title">Dec 2025 – Feb 2026 &nbsp;·&nbsp; Quarter end 28 Feb 2026 &nbsp;·&nbsp; Due 7 April 2026</span>
+      </div>
+      <div class="table-card"><div class="table-wrap"><table>
+        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+        <thead><tr>
+          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>December 2025</td><td class="r">£2,192.48</td><td class="r input-col">(£557.49)</td><td class="r net-col">£1,634.99</td><td class="r running-col">£1,634.99</td></tr>
+          <tr><td>January 2026</td><td class="r">£2,403.33</td><td class="r input-col">(£114.40)</td><td class="r net-col">£2,288.93</td><td class="r running-col">£3,923.92</td></tr>
+          <tr><td>February 2026</td><td class="r">£2,543.60</td><td class="r input-col">(£80.00)</td><td class="r net-col">£2,463.60</td><td class="r running-col">£6,387.52</td></tr>
+        </tbody>
+        <tfoot><tr class="total-row"><td><strong>Q1 — Paid 7 April 2026</strong></td><td class="r">£7,139.41</td><td class="r">(£751.89)</td><td class="r">£6,387.52</td><td class="r running-col">£6,387.52</td></tr></tfoot>
+      </table></div></div>
+    </div>
+
+  </div><!-- /tab-vat -->
+
+  <!-- ===================== CT TAB ===================== -->
+  <div class="tab-panel active" id="tab-ct">
+
+    <!-- CT hero callout -->
+    <div class="vat-hero">
+      <div class="vat-hero-inner">
+        <div>
+          <div class="brand-pill" style="color:var(--pink);margin-bottom:6px;font-size:19px;font-weight:700;letter-spacing:0.3px;text-transform:none;">Corporation Tax — Y/E 30 November 2026</div>
+          <div class="vat-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated CT liability to end of September 2026</div>
+          <div class="vat-hero-sub" id="ct-hero-sub"></div>
+        </div>
+        <div class="vat-hero-amount" style="color:#cca8ff;" id="ct-hero-amount">£14,600</div>
+      </div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="tile-label">YTD Net Profit</div><div class="tile-value" id="ct-tile-ytd">£63,449</div><div class="tile-note" id="ct-tile-ytd-note">Dec 2025 – Sep 2026 confirmed</div></div>
+      <div class="tile"><div class="tile-label">Est. CT Rate</div><div class="tile-value accent" id="ct-tile-fy">—</div><div class="tile-note">Marginal rate — see note ↓</div></div>
+      <div class="tile"><div class="tile-label">CT Due</div><div class="tile-value warn">1 Sep 2027</div><div class="tile-note">9 months &amp; 1 day after year end</div></div>
+      <div class="tile"><div class="tile-label">CT Payment Status</div><div class="tile-value" style="font-size:18px;"><span class="status estimated">Not yet due</span></div><div class="tile-note">No payment required until 1 Sep 2027</div></div>
+    </div>
+
+    <div class="section-head">Monthly Breakdown</div>
+    <div class="table-card"><div class="table-wrap"><table>
+      <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+      <thead><tr>
+        <th>Month</th><th class="r">Revenue</th><th class="r">Net Profit</th><th class="r">CT @ 19%*</th><th class="r">Cumulative CT</th>
+      </tr></thead>
+      <tbody id="ct-body"></tbody>
+      <tfoot><tr class="total-row">
+        <td><strong>Year to Date Total</strong></td>
+        <td class="r" id="ct-foot-rev">—</td>
+        <td class="r" id="ct-foot-profit">—</td>
+        <td class="r ct-col" id="ct-foot-ct">—</td>
+        <td class="r cum-col" id="ct-foot-cum">—</td>
+      </tr></tfoot>
+    </table></div></div>
+
+    <div class="advisory" id="ct-marginal-note"></div>
+
+  </div><!-- /tab-ct -->
+
+  <div class="footer">
+    Prepared by Flow Accounting &amp; Tax Advice Ltd · Data from Xero · <a href="https://calendly.com/flowaccandtax">Book a Call with Stephen</a>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// VAT hero subtext — shows post-quarter message only once quarter has ended
+(function() {
+  const quarterEnd = new Date('2026-11-30');
+  const today = new Date();
+  const sub = document.getElementById('vat-hero-sub');
+  if (today > quarterEnd) {
+    sub.innerHTML = '<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 7 January 2027 (or shortly after if HMRC VAT Direct Debit in place)</li><li>· Quarter ended — final reconciliations and VAT payable to follow under separate cover</li></ul>';
+  } else {
+    sub.innerHTML = '<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 7 January 2027 (or shortly after if HMRC VAT Direct Debit in place)</li><li>· Quarter in progress</li><li>· Updates will be provided after the end of each month</li></ul>';
+  }
+})();
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && name === 'ct') || (i === 1 && name === 'vat'));
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// CT months — confirmed data only; Oct/Nov are unreconciled placeholders
+const ctMonths = [
+  { m: 'Dec 2025', rev: '£11,004', net: 3700,  cutoff: new Date('2025-12-31') },
+  { m: 'Jan 2026', rev: '£12,061', net: 7233,  cutoff: new Date('2026-01-31') },
+  { m: 'Feb 2026', rev: '£11,809', net: 7736,  cutoff: new Date('2026-02-28') },
+  { m: 'Mar 2026', rev: '£11,803', net: 2674,  cutoff: new Date('2026-03-31') },
+  { m: 'Apr 2026', rev: '£12,213', net: 6783,  cutoff: new Date('2026-04-30') },
+  { m: 'May 2026', rev: '£12,497', net: 8464,  cutoff: new Date('2026-05-31') },
+  { m: 'Jun 2026', rev: '£11,818', net: 4334,  cutoff: new Date('2026-06-30') },
+  { m: 'Jul 2026', rev: '£19,402', net: 14572, cutoff: new Date('2026-07-31') },
+  { m: 'Aug 2026', rev: '£11,822', net: 1053,  cutoff: new Date('2026-08-31') },
+  { m: 'Sep 2026', rev: '£12,006', net: 7770,  cutoff: new Date('2026-09-30') },
+  { m: 'Oct 2026', rev: null,      net: null,  cutoff: new Date('2026-10-31') },
+  { m: 'Nov 2026', rev: null,      net: null,  cutoff: new Date('2026-11-30') },
+];
+
+// Split into reconciled and unreconciled
+const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+const reconciled = ctMonths.filter(m => m.cutoff < firstOfThisMonth && m.net !== null);
+const unreconciled = ctMonths.filter(m => m.cutoff >= firstOfThisMonth || m.net === null);
+
+// Average monthly profit from reconciled months (positive only for rate calc)
+const confirmedProfits = reconciled.map(m => m.net);
+const avgProfit = confirmedProfits.reduce((a, b) => a + b, 0) / confirmedProfits.length;
+
+// Project full-year profit: confirmed + (unreconciled months × average)
+const confirmedTotal = confirmedProfits.reduce((a, b) => a + b, 0);
+const projectedTotal = confirmedTotal + (unreconciled.length * avgProfit);
+
+// Marginal relief effective rate calculation
+// Band: £50k–£250k; formula: effective rate = 19% + (3/200) × (1 - 250k/profits)
+function marginalRate(profit) {
+  if (profit <= 50000) return 0.19;
+  if (profit >= 250000) return 0.25;
+  const marginalRelief = (3 / 200) * (250000 - profit);
+  return (profit * 0.25 - marginalRelief) / profit;
+}
+const effectiveRate = marginalRate(projectedTotal);
+const effectivePct = (effectiveRate * 100).toFixed(2);
+
+// Build table
+let cum = 0;
+const body = document.getElementById('ct-body');
+
+reconciled.forEach(m => {
+  const ct = m.net > 0 ? Math.round(m.net * effectiveRate) : 0;
+  if (m.net > 0) cum += ct;
+  const fmtNet = m.net < 0 ? `<span style="color:#b8001a">(£${Math.abs(m.net).toLocaleString('en-GB')})</span>` : `£${m.net.toLocaleString('en-GB')}`;
+  const fmtCT = ct > 0 ? `£${ct.toLocaleString('en-GB')}` : '—';
+  const fmtCum = `£${Math.round(cum).toLocaleString('en-GB')}`;
+  body.innerHTML += `<tr><td>${m.m}</td><td class="r">${m.rev}</td><td class="r">${fmtNet}</td><td class="r ct-col">${fmtCT}</td><td class="r cum-col">${fmtCum}</td></tr>`;
+});
+
+// Unreconciled months — dashes for revenue/profit/CT, cumulative carries forward
+unreconciled.forEach(m => {
+  body.innerHTML += `<tr class="m-projected"><td>${m.m}</td><td class="r">—</td><td class="r">—</td><td class="r ct-col">—</td><td class="r cum-col">£${Math.round(cum).toLocaleString('en-GB')}</td></tr>`;
+});
+
+// Confirmed totals (for YTD footer row)
+const confirmedRevTotal = reconciled.reduce((a, m) => {
+  const n = parseInt((m.rev || '').replace(/[^0-9]/g, ''), 10) || 0;
+  return a + n;
+}, 0);
+const confirmedProfitTotal = reconciled.reduce((a, m) => a + (m.net > 0 ? m.net : 0), 0);
+const confirmedCT = Math.round(confirmedProfitTotal * effectiveRate);
+
+// Projected CT for hero
+const projCT = Math.round(projectedTotal > 0 ? projectedTotal * effectiveRate : 0);
+
+// Footer row — confirmed months only
+document.getElementById('ct-foot-rev').textContent = '£' + confirmedRevTotal.toLocaleString('en-GB');
+document.getElementById('ct-foot-profit').textContent = '£' + confirmedProfitTotal.toLocaleString('en-GB');
+document.getElementById('ct-foot-ct').textContent = '£' + confirmedCT.toLocaleString('en-GB');
+document.getElementById('ct-foot-cum').textContent = '£' + Math.round(cum).toLocaleString('en-GB');
+
+// Hero banner — shows confirmed YTD cumulative CT, matching the table footer
+const ctHero = document.getElementById('ct-hero-amount');
+if (ctHero) ctHero.textContent = '£' + Math.round(cum).toLocaleString('en-GB');
+const ctSub = document.getElementById('ct-hero-sub');
+const lastRecMonth = reconciled[reconciled.length - 1].m;
+if (ctSub) ctSub.innerHTML = `<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 1 September 2027</li><li>· Based on reconciled profit to ${lastRecMonth}</li><li>· Final figure confirmed once accounts are prepared</li></ul>`;
+
+// Tiles
+const ctTileFY = document.getElementById('ct-tile-fy');
+if (ctTileFY) ctTileFY.textContent = effectivePct + '%';
+const ctTileYTD = document.getElementById('ct-tile-ytd');
+if (ctTileYTD) ctTileYTD.textContent = '£' + confirmedProfitTotal.toLocaleString('en-GB');
+const ctTileYTDNote = document.getElementById('ct-tile-ytd-note');
+if (ctTileYTDNote) ctTileYTDNote.textContent = `${reconciled[0].m} – ${lastRecMonth} confirmed`;
+
+// Marginal relief footnote
+const unreconciledNames = unreconciled.map(m => m.m);
+const noteEl = document.getElementById('ct-marginal-note');
+const unreconciledText = unreconciledNames.length > 0
+  ? ` The taxable profits for ${unreconciledNames.join(' and ')} have been estimated using the average monthly profit from the ${reconciled.length} confirmed months in the period (£${Math.round(avgProfit).toLocaleString('en-GB')} per month) to establish an estimated rate of corporation tax. This will be cumulatively adjusted as the year progresses to give as accurate a rate as possible.`
+  : '';
+const estText = unreconciledNames.length > 0
+  ? ` ${unreconciledNames.join(' and ')} are estimated using the average of the ${reconciled.length} confirmed months (£${Math.round(avgProfit).toLocaleString('en-GB')}/month) and will update as each month reconciles.`
+  : '';
+noteEl.innerHTML = `<strong>&#42;&nbsp;Marginal rate of CT applies.</strong> Projected profits of <strong>£${Math.round(projectedTotal).toLocaleString('en-GB')}</strong> fall in the £50,000–£250,000 marginal relief band, giving an effective rate of <strong>${effectivePct}%</strong> rather than the standard 19%.${estText} No associated companies assumed.`;
+</script>
