@@ -22,8 +22,8 @@
 
 const https = require('https');
 
-const CLIENT_ID     = process.env.XERO_CLIENT_ID     || 'DDA1B6E801104C488FDB24EC34268C26';
-const CLIENT_SECRET = process.env.XERO_CLIENT_SECRET || 'VlZShBgNbrJFfU4eDnH-H0mCv0OmgqiVXTTj4cSeFs_UCBHn';
+const CLIENT_ID     = process.env.XERO_CLIENT_ID     || '47EAF98AD7FE4F429209E35AF977E253';
+const CLIENT_SECRET = process.env.XERO_CLIENT_SECRET || 'ao94y1-HKdtQDqciqm7W4Pe-hnPmt38o18_Iyrkqxz4AYCE-';
 
 function cors() {
   return {
