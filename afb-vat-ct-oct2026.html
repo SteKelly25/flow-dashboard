@@ -261,7 +261,7 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
       </svg>
       <div class="header-title">A Friendly Bunch Ltd</div>
       <div class="header-sub" style="color:rgba(255,255,255,0.75);font-size:26px;font-weight:700;margin-bottom:4px;">Corporation Tax &amp; VAT Estimates</div>
-      <div class="header-sub">Accounting year ending 30 November 2026 &nbsp;·&nbsp; Updated 24 October 2026</div>
+      <div class="header-sub">Accounting year ending 30 November 2026 &nbsp;·&nbsp; Updated <span id="updated-date">24 October 2026</span></div>
     </div>
     <!-- Flow starburst badge on right -->
     <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -650,6 +650,7 @@ async function loadLiveXeroData() {
     const returnCount = vatReturns.length;
     const pmtCount    = vatPmts.length + ctPmts.length;
 
+    try { const ud = document.getElementById('updated-date'); if (ud && data.asOf) ud.textContent = new Date(data.asOf).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric',timeZone:'Europe/London'}); } catch (e) {}
     indicator.textContent = `✓ Live Xero data loaded — ${returnCount} VAT return${returnCount !== 1 ? 's' : ''}, ${pmtCount} payment${pmtCount !== 1 ? 's' : ''} found · ${new Date(data.asOf).toLocaleString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
     indicator.style.opacity = '0.6';
 
