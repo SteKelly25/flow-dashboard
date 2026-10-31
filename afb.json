@@ -1,0 +1,38 @@
+{
+  "client": "A Friendly Bunch Ltd",
+  "yearEnd": "2026-11-30",
+  "updated": "2026-10-31",
+  "reconciledThrough": "2026-09",
+  "sources": {
+    "ct": "Xero Profit & Loss, month by month, run 31 October 2026 (accrual basis)",
+    "vat": "Xero Profit & Loss VAT (Sep 2026 input VAT per Xero VAT Reconciliation report); payment dates per Xero VAT account (820) transactions export"
+  },
+  "ct": {
+    "months": [
+      { "m": "Dec 2025", "rev": 11004, "net": 3700 },
+      { "m": "Jan 2026", "rev": 12061, "net": 7233 },
+      { "m": "Feb 2026", "rev": 11809, "net": 7736 },
+      { "m": "Mar 2026", "rev": 11803, "net": 2674 },
+      { "m": "Apr 2026", "rev": 12213, "net": 6783 },
+      { "m": "May 2026", "rev": 12497, "net": 8464 },
+      { "m": "Jun 2026", "rev": 11818, "net": 4334 },
+      { "m": "Jul 2026", "rev": 19402, "net": 14572 },
+      { "m": "Aug 2026", "rev": 11822, "net": 1053 },
+      { "m": "Sep 2026", "rev": 12006, "net": 7770 },
+      { "m": "Oct 2026", "rev": null, "net": null },
+      { "m": "Nov 2026", "rev": null, "net": null }
+    ]
+  },
+  "vat": {
+    "quarters": [
+      { "id": "Q4", "tile": "Sep 26–Nov 26", "title": "Sep – Nov 2026", "qEnd": "2026-11-30", "qEndText": "30 Nov 2026", "dueText": "7 January 2027", "dueShort": "7 Jan 2027", "status": "open",
+        "months": [ { "m": "September 2026", "out": 2401.20, "in": 151.56 } ] },
+      { "id": "Q3", "tile": "Jun 26–Aug 26", "title": "Jun – Aug 2026", "qEnd": "2026-08-31", "qEndText": "31 Aug 2026", "dueText": "7 October 2026", "dueShort": "7 Oct 2026", "status": "paid", "paidText": "7 October 2026", "paidShort": "7 Oct 2026",
+        "months": [ { "m": "June 2026", "out": 2353.60, "in": 208.45 }, { "m": "July 2026", "out": 3838.85, "in": 133.92 }, { "m": "August 2026", "out": 2353.60, "in": 275.23 } ] },
+      { "id": "Q2", "tile": "Mar 26–May 26", "title": "Mar – May 2026", "qEnd": "2026-05-31", "qEndText": "31 May 2026", "dueText": "7 July 2026", "dueShort": "7 Jul 2026", "status": "paid", "paidText": "7 July 2026", "paidShort": "7 Jul 2026",
+        "months": [ { "m": "March 2026", "out": 2353.60, "in": 131.25 }, { "m": "April 2026", "out": 2433.35, "in": 144.80 }, { "m": "May 2026", "out": 2588.37, "in": 218.73 } ] },
+      { "id": "Q1", "tile": "Dec 25–Feb 26", "title": "Dec 2025 – Feb 2026", "qEnd": "2026-02-28", "qEndText": "28 Feb 2026", "dueText": "7 April 2026", "dueShort": "7 Apr 2026", "status": "paid", "paidText": "7 April 2026", "paidShort": "7 Apr 2026",
+        "months": [ { "m": "December 2025", "out": 2192.48, "in": 557.49 }, { "m": "January 2026", "out": 2403.33, "in": 114.40 }, { "m": "February 2026", "out": 2543.60, "in": 80.00 } ] }
+    ]
+  }
+}

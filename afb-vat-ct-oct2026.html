@@ -294,98 +294,17 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
     <div class="vat-hero">
       <div class="vat-hero-inner">
         <div>
-          <div class="brand-pill" style="color:var(--pink);margin-bottom:6px;font-size:19px;font-weight:700;letter-spacing:0.3px;text-transform:none;">VAT — Q/E 30 November 2026</div>
-          <div class="vat-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated cumulative VAT to end of September 2026</div>
+          <div class="brand-pill" style="color:var(--pink);margin-bottom:6px;font-size:19px;font-weight:700;letter-spacing:0.3px;text-transform:none;" id="vat-hero-pill">VAT — Q/E 30 November 2026</div>
+          <div class="vat-hero-title" id="vat-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated cumulative VAT</div>
           <div class="vat-hero-sub" id="vat-hero-sub"></div>
         </div>
-        <div class="vat-hero-amount">£2,250</div>
+        <div class="vat-hero-amount" id="vat-hero-amount"></div>
       </div>
     </div>
 
-    <div class="tiles">
-      <div class="tile"><div class="tile-label">Q4 (Sep 26–Nov 26)</div><div class="tile-value accent">£2,250</div><div class="tile-note"><span class="status estimated">In progress</span> due 7 Jan 2027</div></div>
-      <div class="tile"><div class="tile-label">Q3 (Jun 26–Aug 26)</div><div class="tile-value">£7,928</div><div class="tile-note"><span class="status paid">Paid</span> 7 Oct 2026</div></div>
-      <div class="tile"><div class="tile-label">Q2 (Mar 26–May 26)</div><div class="tile-value">£6,881</div><div class="tile-note"><span class="status paid">Paid</span> 7 Jul 2026</div></div>
-      <div class="tile"><div class="tile-label">Q1 (Dec 25–Feb 26)</div><div class="tile-value">£6,388</div><div class="tile-note"><span class="status paid">Paid</span> 7 Apr 2026</div></div>
-    </div>
+    <div class="tiles" id="vat-tiles"></div>
 
-    <!-- Q4 IN PROGRESS -->
-    <div class="quarter-block">
-      <div class="quarter-label">
-        <span class="q-pill estimated">Q4 — In Progress</span>
-        <span class="q-title">Sep – Nov 2026 &nbsp;·&nbsp; Quarter end 30 Nov 2026 &nbsp;·&nbsp; Due 7 January 2027</span>
-      </div>
-      <div class="table-card"><div class="table-wrap"><table>
-        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
-        <thead><tr>
-          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
-        </tr></thead>
-        <tbody>
-          <tr><td>September 2026</td><td class="r">£2,401.20</td><td class="r input-col">(£151.56)</td><td class="r net-col">£2,249.64</td><td class="r running-col">£2,249.64</td></tr>
-        </tbody>
-        <tfoot><tr class="total-row"><td><strong>Q4 — Due 7 January 2027</strong></td><td class="r">£2,401.20</td><td class="r">(£151.56)</td><td class="r">£2,249.64</td><td class="r running-col">£2,250</td></tr></tfoot>
-      </table></div></div>
-    </div>
-
-    <!-- Q3 -->
-    <div class="quarter-block">
-      <div class="quarter-label">
-        <span class="q-pill confirmed">Q3</span>
-        <span class="q-title">Jun – Aug 2026 &nbsp;·&nbsp; Quarter end 31 Aug 2026 &nbsp;·&nbsp; Due 7 October 2026</span>
-      </div>
-      <div class="table-card"><div class="table-wrap"><table>
-        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
-        <thead><tr>
-          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
-        </tr></thead>
-        <tbody>
-          <tr><td>June 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£208.45)</td><td class="r net-col">£2,145.15</td><td class="r running-col">£2,145.15</td></tr>
-          <tr><td>July 2026</td><td class="r">£3,838.85</td><td class="r input-col">(£133.92)</td><td class="r net-col">£3,704.93</td><td class="r running-col">£5,850.08</td></tr>
-          <tr><td>August 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£275.23)</td><td class="r net-col">£2,078.37</td><td class="r running-col">£7,928.45</td></tr>
-        </tbody>
-        <tfoot><tr class="total-row"><td><strong>Q3 — Paid 7 October 2026</strong></td><td class="r">£8,546.05</td><td class="r">(£617.60)</td><td class="r">£7,928.45</td><td class="r running-col">£7,928.45</td></tr></tfoot>
-      </table></div></div>
-    </div>
-
-    <!-- Q2 -->
-    <div class="quarter-block">
-      <div class="quarter-label">
-        <span class="q-pill confirmed">Q2</span>
-        <span class="q-title">Mar – May 2026 &nbsp;·&nbsp; Quarter end 31 May 2026 &nbsp;·&nbsp; Due 7 July 2026</span>
-      </div>
-      <div class="table-card"><div class="table-wrap"><table>
-        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
-        <thead><tr>
-          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
-        </tr></thead>
-        <tbody>
-          <tr><td>March 2026</td><td class="r">£2,353.60</td><td class="r input-col">(£131.25)</td><td class="r net-col">£2,222.35</td><td class="r running-col">£2,222.35</td></tr>
-          <tr><td>April 2026</td><td class="r">£2,433.35</td><td class="r input-col">(£144.80)</td><td class="r net-col">£2,288.55</td><td class="r running-col">£4,510.90</td></tr>
-          <tr><td>May 2026</td><td class="r">£2,588.37</td><td class="r input-col">(£218.73)</td><td class="r net-col">£2,369.64</td><td class="r running-col">£6,880.54</td></tr>
-        </tbody>
-        <tfoot><tr class="total-row"><td><strong>Q2 — Paid 7 July 2026</strong></td><td class="r">£7,375.32</td><td class="r">(£494.78)</td><td class="r">£6,880.54</td><td class="r running-col">£6,880.54</td></tr></tfoot>
-      </table></div></div>
-    </div>
-
-    <!-- Q1 -->
-    <div class="quarter-block">
-      <div class="quarter-label">
-        <span class="q-pill confirmed">Q1</span>
-        <span class="q-title">Dec 2025 – Feb 2026 &nbsp;·&nbsp; Quarter end 28 Feb 2026 &nbsp;·&nbsp; Due 7 April 2026</span>
-      </div>
-      <div class="table-card"><div class="table-wrap"><table>
-        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
-        <thead><tr>
-          <th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th>
-        </tr></thead>
-        <tbody>
-          <tr><td>December 2025</td><td class="r">£2,192.48</td><td class="r input-col">(£557.49)</td><td class="r net-col">£1,634.99</td><td class="r running-col">£1,634.99</td></tr>
-          <tr><td>January 2026</td><td class="r">£2,403.33</td><td class="r input-col">(£114.40)</td><td class="r net-col">£2,288.93</td><td class="r running-col">£3,923.92</td></tr>
-          <tr><td>February 2026</td><td class="r">£2,543.60</td><td class="r input-col">(£80.00)</td><td class="r net-col">£2,463.60</td><td class="r running-col">£6,387.52</td></tr>
-        </tbody>
-        <tfoot><tr class="total-row"><td><strong>Q1 — Paid 7 April 2026</strong></td><td class="r">£7,139.41</td><td class="r">(£751.89)</td><td class="r">£6,387.52</td><td class="r running-col">£6,387.52</td></tr></tfoot>
-      </table></div></div>
-    </div>
+    <div id="vat-quarters"></div>
 
   </div><!-- /tab-vat -->
 
@@ -397,10 +316,10 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
       <div class="vat-hero-inner">
         <div>
           <div class="brand-pill" style="color:var(--pink);margin-bottom:6px;font-size:19px;font-weight:700;letter-spacing:0.3px;text-transform:none;">Corporation Tax — Y/E 30 November 2026</div>
-          <div class="vat-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated CT liability to end of September 2026</div>
+          <div class="vat-hero-title" id="ct-hero-title" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.9);">Estimated CT liability</div>
           <div class="vat-hero-sub" id="ct-hero-sub"></div>
         </div>
-        <div class="vat-hero-amount" style="color:#cca8ff;" id="ct-hero-amount">£14,600</div>
+        <div class="vat-hero-amount" style="color:#cca8ff;" id="ct-hero-amount"></div>
       </div>
     </div>
 
@@ -431,23 +350,15 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
   </div><!-- /tab-ct -->
 
   <div class="footer">
-    Prepared by Flow Accounting &amp; Tax Advice Ltd · Data from Xero · <a href="https://calendly.com/flowaccandtax">Book a Call with Stephen</a>
+    Prepared by Flow Accounting &amp; Tax Advice Ltd · <span id="footer-data">Data from Xero</span> · <a href="https://calendly.com/flowaccandtax">Book a Call with Stephen</a>
   </div>
 
 </div><!-- /wrap -->
 
 <script>
-// VAT hero subtext — shows post-quarter message only once quarter has ended
-(function() {
-  const quarterEnd = new Date('2026-11-30');
-  const today = new Date();
-  const sub = document.getElementById('vat-hero-sub');
-  if (today > quarterEnd) {
-    sub.innerHTML = '<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 7 January 2027 (or shortly after if HMRC VAT Direct Debit in place)</li><li>· Quarter ended — final reconciliations and VAT payable to follow under separate cover</li></ul>';
-  } else {
-    sub.innerHTML = '<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 7 January 2027 (or shortly after if HMRC VAT Direct Debit in place)</li><li>· Quarter in progress</li><li>· Updates will be provided after the end of each month</li></ul>';
-  }
-})();
+const GBP = n => '£' + Math.round(n).toLocaleString('en-GB');
+const GBP2 = n => '£' + n.toLocaleString('en-GB', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const NEG2 = n => '(' + GBP2(n) + ')';
 
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
@@ -457,208 +368,125 @@ function switchTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// CT months — confirmed data only; Oct/Nov are unreconciled placeholders
-const ctMonths = [
-  { m: 'Dec 2025', rev: '£11,004', net: 3700,  cutoff: new Date('2025-12-31') },
-  { m: 'Jan 2026', rev: '£12,061', net: 7233,  cutoff: new Date('2026-01-31') },
-  { m: 'Feb 2026', rev: '£11,809', net: 7736,  cutoff: new Date('2026-02-28') },
-  { m: 'Mar 2026', rev: '£11,803', net: 2674,  cutoff: new Date('2026-03-31') },
-  { m: 'Apr 2026', rev: '£12,213', net: 6783,  cutoff: new Date('2026-04-30') },
-  { m: 'May 2026', rev: '£12,497', net: 8464,  cutoff: new Date('2026-05-31') },
-  { m: 'Jun 2026', rev: '£11,818', net: 4334,  cutoff: new Date('2026-06-30') },
-  { m: 'Jul 2026', rev: '£19,402', net: 14572, cutoff: new Date('2026-07-31') },
-  { m: 'Aug 2026', rev: '£11,822', net: 1053,  cutoff: new Date('2026-08-31') },
-  { m: 'Sep 2026', rev: '£12,006', net: 7770,  cutoff: new Date('2026-09-30') },
-  { m: 'Oct 2026', rev: null,      net: null,  cutoff: new Date('2026-10-31') },
-  { m: 'Nov 2026', rev: null,      net: null,  cutoff: new Date('2026-11-30') },
-];
+function monthName(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'});
+}
 
-// Split into reconciled and unreconciled
-const firstOfThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-const reconciled = ctMonths.filter(m => m.cutoff < firstOfThisMonth && m.net !== null);
-const unreconciled = ctMonths.filter(m => m.cutoff >= firstOfThisMonth || m.net === null);
+// ── VAT tab ────────────────────────────────────────────────────────────────
+function renderVat(data) {
+  const quarters = data.vat.quarters;
+  const open = quarters.find(q => q.status === 'open');
+  const list = ul => `<ul style="list-style:none;padding:0;margin:0;line-height:1.6;">${ul.map(i => `<li>· ${i}</li>`).join('')}</ul>`;
 
-// Average monthly profit from reconciled months (positive only for rate calc)
-const confirmedProfits = reconciled.map(m => m.net);
-const avgProfit = confirmedProfits.reduce((a, b) => a + b, 0) / confirmedProfits.length;
+  // Hero
+  const heroSub = document.getElementById('vat-hero-sub');
+  const heroAmt = document.getElementById('vat-hero-amount');
+  const heroTitle = document.getElementById('vat-hero-title');
+  const heroPill = document.getElementById('vat-hero-pill');
+  if (open) {
+    const net = open.months.reduce((a, m) => a + m.out - m.in, 0);
+    heroAmt.textContent = GBP(net);
+    heroPill.textContent = `VAT — Q/E ${open.qEndText.replace(/^(\d+) (\w+) (\d+)$/, (s, d, mo, y) => `${d} ${({Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'})[mo]} ${y}`)}`;
+    heroTitle.textContent = `Estimated cumulative VAT to end of ${monthName(data.reconciledThrough)}`;
+    const due = `Due ${open.dueText} (or shortly after if HMRC VAT Direct Debit in place)`;
+    const ended = new Date() > new Date(open.qEnd);
+    heroSub.innerHTML = ended
+      ? list([due, 'Quarter ended — final reconciliations and VAT payable to follow under separate cover'])
+      : list([due, 'Quarter in progress', 'Updates will be provided after the end of each month']);
+  }
 
-// Project full-year profit: confirmed + (unreconciled months × average)
-const confirmedTotal = confirmedProfits.reduce((a, b) => a + b, 0);
-const projectedTotal = confirmedTotal + (unreconciled.length * avgProfit);
+  // Tiles
+  document.getElementById('vat-tiles').innerHTML = quarters.map((q, i) => {
+    const net = q.months.reduce((a, m) => a + m.out - m.in, 0);
+    const note = q.status === 'paid'
+      ? `<span class="status paid">Paid</span> ${q.paidShort}`
+      : `<span class="status estimated">In progress</span> due ${q.dueShort}`;
+    return `<div class="tile"><div class="tile-label">${q.id} (${q.tile})</div><div class="tile-value${q.status === 'open' ? ' accent' : ''}">${GBP(net)}</div><div class="tile-note">${note}</div></div>`;
+  }).join('');
 
-// Marginal relief effective rate calculation
-// Band: £50k–£250k; formula: effective rate = 19% + (3/200) × (1 - 250k/profits)
+  // Quarter tables
+  document.getElementById('vat-quarters').innerHTML = quarters.map(q => {
+    let run = 0, out = 0, inp = 0;
+    const rows = q.months.map(m => {
+      const net = m.out - m.in; run += net; out += m.out; inp += m.in;
+      return `<tr><td>${m.m}</td><td class="r">${GBP2(m.out)}</td><td class="r input-col">${NEG2(m.in)}</td><td class="r net-col">${GBP2(net)}</td><td class="r running-col">${GBP2(run)}</td></tr>`;
+    }).join('');
+    const isOpen = q.status === 'open';
+    const pill = isOpen ? `<span class="q-pill estimated">${q.id} — In Progress</span>` : `<span class="q-pill confirmed">${q.id}</span>`;
+    const dueLine = `Quarter end ${q.qEndText} &nbsp;·&nbsp; Due ${q.dueText}`;
+    const footLabel = isOpen ? `${q.id} — Due ${q.dueText}` : `${q.id} — Paid ${q.paidText}`;
+    return `<div class="quarter-block">
+      <div class="quarter-label">${pill}<span class="q-title">${q.title} &nbsp;·&nbsp; ${dueLine}</span></div>
+      <div class="table-card"><div class="table-wrap"><table>
+        <colgroup><col class="col-month"><col class="col-val"><col class="col-val"><col class="col-val"><col class="col-val"></colgroup>
+        <thead><tr><th>Month</th><th class="r">Output VAT</th><th class="r">Input VAT</th><th class="r">Net</th><th class="r">Quarter Running</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr class="total-row"><td><strong>${footLabel}</strong></td><td class="r">${GBP2(out)}</td><td class="r">${NEG2(inp)}</td><td class="r">${GBP2(out - inp)}</td><td class="r running-col">${isOpen ? GBP(run) : GBP2(run)}</td></tr></tfoot>
+      </table></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── CT tab ─────────────────────────────────────────────────────────────────
+// Band £50k–£250k; effective rate = 25% less marginal relief (3/200 × (250k − profit))
 function marginalRate(profit) {
   if (profit <= 50000) return 0.19;
   if (profit >= 250000) return 0.25;
-  const marginalRelief = (3 / 200) * (250000 - profit);
-  return (profit * 0.25 - marginalRelief) / profit;
-}
-const effectiveRate = marginalRate(projectedTotal);
-const effectivePct = (effectiveRate * 100).toFixed(2);
-
-// Build table
-let cum = 0;
-const body = document.getElementById('ct-body');
-
-reconciled.forEach(m => {
-  const ct = m.net > 0 ? Math.round(m.net * effectiveRate) : 0;
-  if (m.net > 0) cum += ct;
-  const fmtNet = m.net < 0 ? `<span style="color:#b8001a">(£${Math.abs(m.net).toLocaleString('en-GB')})</span>` : `£${m.net.toLocaleString('en-GB')}`;
-  const fmtCT = ct > 0 ? `£${ct.toLocaleString('en-GB')}` : '—';
-  const fmtCum = `£${Math.round(cum).toLocaleString('en-GB')}`;
-  body.innerHTML += `<tr><td>${m.m}</td><td class="r">${m.rev}</td><td class="r">${fmtNet}</td><td class="r ct-col">${fmtCT}</td><td class="r cum-col">${fmtCum}</td></tr>`;
-});
-
-// Unreconciled months — dashes for revenue/profit/CT, cumulative carries forward
-unreconciled.forEach(m => {
-  body.innerHTML += `<tr class="m-projected"><td>${m.m}</td><td class="r">—</td><td class="r">—</td><td class="r ct-col">—</td><td class="r cum-col">£${Math.round(cum).toLocaleString('en-GB')}</td></tr>`;
-});
-
-// Confirmed totals (for YTD footer row)
-const confirmedRevTotal = reconciled.reduce((a, m) => {
-  const n = parseInt((m.rev || '').replace(/[^0-9]/g, ''), 10) || 0;
-  return a + n;
-}, 0);
-const confirmedProfitTotal = reconciled.reduce((a, m) => a + (m.net > 0 ? m.net : 0), 0);
-const confirmedCT = Math.round(confirmedProfitTotal * effectiveRate);
-
-// Projected CT for hero
-const projCT = Math.round(projectedTotal > 0 ? projectedTotal * effectiveRate : 0);
-
-// Footer row — confirmed months only
-document.getElementById('ct-foot-rev').textContent = '£' + confirmedRevTotal.toLocaleString('en-GB');
-document.getElementById('ct-foot-profit').textContent = '£' + confirmedProfitTotal.toLocaleString('en-GB');
-document.getElementById('ct-foot-ct').textContent = '£' + confirmedCT.toLocaleString('en-GB');
-document.getElementById('ct-foot-cum').textContent = '£' + Math.round(cum).toLocaleString('en-GB');
-
-// Hero banner — shows confirmed YTD cumulative CT, matching the table footer
-const ctHero = document.getElementById('ct-hero-amount');
-if (ctHero) ctHero.textContent = '£' + Math.round(cum).toLocaleString('en-GB');
-const ctSub = document.getElementById('ct-hero-sub');
-const lastRecMonth = reconciled[reconciled.length - 1].m;
-if (ctSub) ctSub.innerHTML = `<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 1 September 2027</li><li>· Based on reconciled profit to ${lastRecMonth}</li><li>· Final figure confirmed once accounts are prepared</li></ul>`;
-
-// Tiles
-const ctTileFY = document.getElementById('ct-tile-fy');
-if (ctTileFY) ctTileFY.textContent = effectivePct + '%';
-const ctRateHeader = document.getElementById('ct-rate-header');
-if (ctRateHeader) ctRateHeader.textContent = 'CT @ ' + effectivePct + '%*';
-const ctTileYTD = document.getElementById('ct-tile-ytd');
-if (ctTileYTD) ctTileYTD.textContent = '£' + confirmedProfitTotal.toLocaleString('en-GB');
-const ctTileYTDNote = document.getElementById('ct-tile-ytd-note');
-if (ctTileYTDNote) ctTileYTDNote.textContent = `${reconciled[0].m} – ${lastRecMonth} confirmed`;
-
-// Marginal relief footnote
-const unreconciledNames = unreconciled.map(m => m.m);
-const noteEl = document.getElementById('ct-marginal-note');
-const unreconciledText = unreconciledNames.length > 0
-  ? ` The taxable profits for ${unreconciledNames.join(' and ')} have been estimated using the average monthly profit from the ${reconciled.length} confirmed months in the period (£${Math.round(avgProfit).toLocaleString('en-GB')} per month) to establish an estimated rate of corporation tax. This will be cumulatively adjusted as the year progresses to give as accurate a rate as possible.`
-  : '';
-const estText = unreconciledNames.length > 0
-  ? ` ${unreconciledNames.join(' and ')} are estimated using the average of the ${reconciled.length} confirmed months (£${Math.round(avgProfit).toLocaleString('en-GB')}/month) and will update as each month reconciles.`
-  : '';
-noteEl.innerHTML = `<strong>&#42;&nbsp;Marginal rate of CT applies.</strong> Projected profits of <strong>£${Math.round(projectedTotal).toLocaleString('en-GB')}</strong> fall in the £50,000–£250,000 marginal relief band, giving an effective rate of <strong>${effectivePct}%</strong> rather than the standard 19%.${estText} No associated companies assumed.`;
-
-// ── Live Xero data ──────────────────────────────────────────────────────────
-// Fetches actual VAT payment history and CT payment history from Xero via
-// the xero-data Netlify function. Falls back gracefully if unavailable.
-
-const XERO_DATA_URL = '/.netlify/functions/xero-data?client=afb';
-
-// Status badge helper
-function liveStatusBadge(paid, date) {
-  if (paid) return `<span class="status paid">Paid${date ? ' ' + date : ''}</span>`;
-  return `<span class="status estimated">Not yet paid</span>`;
+  return (profit * 0.25 - (3 / 200) * (250000 - profit)) / profit;
 }
 
-async function loadLiveXeroData() {
-  // Add a small "live" indicator to the page header while loading
-  const header = document.querySelector('.vat-hero-sub') || document.querySelector('.vat-hero-inner');
-  let indicator = document.getElementById('xero-live-indicator');
-  if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.id = 'xero-live-indicator';
-    indicator.style.cssText = 'font-size:11px;opacity:0.7;margin-top:6px;';
-    indicator.textContent = '⟳ Loading live Xero data…';
-    // Append to CT hero
-    const ctSub = document.getElementById('ct-hero-sub');
-    if (ctSub) ctSub.appendChild(indicator);
-  }
+function renderCt(data) {
+  const months = data.ct.months;
+  const reconciled = months.filter(m => m.net !== null);
+  const unreconciled = months.filter(m => m.net === null);
+  const confirmedTotal = reconciled.reduce((a, m) => a + m.net, 0);
+  const avgProfit = confirmedTotal / reconciled.length;
+  const projectedTotal = confirmedTotal + unreconciled.length * avgProfit;
+  const rate = marginalRate(projectedTotal);
+  const pct = (rate * 100).toFixed(2);
 
-  try {
-    const res  = await fetch(XERO_DATA_URL);
-    const data = await res.json();
+  let cum = 0;
+  const rows = reconciled.map(m => {
+    const ct = m.net > 0 ? Math.round(m.net * rate) : 0;
+    cum += ct;
+    const fmtNet = m.net < 0 ? `<span style="color:#b8001a">(£${Math.abs(m.net).toLocaleString('en-GB')})</span>` : `£${m.net.toLocaleString('en-GB')}`;
+    return `<tr><td>${m.m}</td><td class="r">£${m.rev.toLocaleString('en-GB')}</td><td class="r">${fmtNet}</td><td class="r ct-col">${ct > 0 ? GBP(ct) : '—'}</td><td class="r cum-col">${GBP(cum)}</td></tr>`;
+  });
+  const pending = unreconciled.map(m => `<tr class="m-projected"><td>${m.m}</td><td class="r">—</td><td class="r">—</td><td class="r ct-col">—</td><td class="r cum-col">${GBP(cum)}</td></tr>`);
+  document.getElementById('ct-body').innerHTML = rows.concat(pending).join('');
 
-    if (data.error) {
-      indicator.textContent = '⚠ Live data unavailable — showing estimates';
-      return;
-    }
+  const revTotal = reconciled.reduce((a, m) => a + m.rev, 0);
+  const profitTotal = reconciled.reduce((a, m) => a + (m.net > 0 ? m.net : 0), 0);
+  const last = reconciled[reconciled.length - 1].m;
+  document.getElementById('ct-foot-rev').textContent = GBP(revTotal);
+  document.getElementById('ct-foot-profit').textContent = GBP(profitTotal);
+  document.getElementById('ct-foot-ct').textContent = GBP(cum);
+  document.getElementById('ct-foot-cum').textContent = GBP(cum);
+  document.getElementById('ct-hero-amount').textContent = GBP(cum);
+  document.getElementById('ct-hero-title').textContent = `Estimated CT liability to end of ${monthName(data.reconciledThrough)}`;
+  document.getElementById('ct-hero-sub').innerHTML = `<ul style="list-style:none;padding:0;margin:0;line-height:1.6;"><li>· Due 1 September 2027</li><li>· Based on reconciled profit to ${last}</li><li>· Final figure confirmed once accounts are prepared</li></ul>`;
+  document.getElementById('ct-tile-fy').textContent = pct + '%';
+  document.getElementById('ct-rate-header').textContent = 'CT @ ' + pct + '%*';
+  document.getElementById('ct-tile-ytd').textContent = GBP(profitTotal);
+  document.getElementById('ct-tile-ytd-note').textContent = `${reconciled[0].m} – ${last} confirmed`;
 
-    // ── VAT quarter tiles ──
-    // Map VAT payments by approximate date to quarter periods
-    // Quarter end dates for AFB (Nov year-end): Feb, May, Aug, Nov
-    const quarterEnds = {
-      'Q1': '2026-02-28', // Dec 25 – Feb 26
-      'Q2': '2026-05-31', // Mar 26 – May 26
-      'Q3': '2026-08-31', // Jun 26 – Aug 26
-      'Q4': '2026-11-30', // Sep 26 – Nov 26
-    };
-    const quarterDue = {
-      'Q1': '2026-04-07',
-      'Q2': '2026-07-07',
-      'Q3': '2026-10-07',
-      'Q4': '2027-01-07',
-    };
-
-    // Check each quarter — if a VAT payment exists on or before the due date, mark paid
-    const vatPmts = data.vatPayments || [];
-
-    ['Q1','Q2','Q3'].forEach(q => {
-      const due = quarterDue[q];
-      const payment = vatPmts.find(p => p.date && p.date <= new Date(due).toISOString().slice(0,10) && p.date >= quarterEnds[q === 'Q1' ? 'Q1' : q].slice(0,7) + '-01');
-      // Find the tile note for this quarter
-      const tiles = document.querySelectorAll('.tile');
-      tiles.forEach(tile => {
-        const label = tile.querySelector('.tile-label');
-        if (label && label.textContent.includes(q + ' ')) {
-          const note = tile.querySelector('.tile-note');
-          if (note && payment) {
-            note.innerHTML = `<span class="status paid">Paid</span> ${payment.date}`;
-          }
-        }
-      });
-    });
-
-    // ── CT payments ──
-    const ctPmts = data.ctPayments || [];
-    if (ctPmts.length > 0) {
-      // Show CT payments in the marginal note footnote area
-      const ctNote = document.getElementById('ct-marginal-note');
-      if (ctNote) {
-        const pmtLines = ctPmts.slice(0,5).map(p =>
-          `${p.date}: £${Math.abs(p.amount).toLocaleString('en-GB')}${p.reference ? ' — ' + p.reference : ''}`
-        ).join('<br>');
-        ctNote.innerHTML += `<br><br><strong>CT payments recorded in Xero:</strong><br>${pmtLines}`;
-      }
-    }
-
-    // ── VAT returns from MTD ──
-    const vatReturns = data.vatReturns || [];
-    // If we have MTD return data, we could overlay onto the VAT quarter breakdowns
-    // For now just update the indicator
-    const returnCount = vatReturns.length;
-    const pmtCount    = vatPmts.length + ctPmts.length;
-
-    try { const ud = document.getElementById('updated-date'); if (ud && data.asOf) ud.textContent = new Date(data.asOf).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric',timeZone:'Europe/London'}); } catch (e) {}
-    indicator.textContent = `✓ Live Xero data loaded — ${returnCount} VAT return${returnCount !== 1 ? 's' : ''}, ${pmtCount} payment${pmtCount !== 1 ? 's' : ''} found · ${new Date(data.asOf).toLocaleString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
-    indicator.style.opacity = '0.6';
-
-  } catch (err) {
-    if (indicator) indicator.textContent = '⚠ Could not load live Xero data';
-  }
+  const names = unreconciled.map(m => m.m);
+  const est = names.length ? ` ${names.join(' and ')} are estimated using the average of the ${reconciled.length} confirmed months (${GBP(avgProfit)}/month) and will update as each month reconciles.` : '';
+  document.getElementById('ct-marginal-note').innerHTML = `<strong>&#42;&nbsp;Marginal rate of CT applies.</strong> Projected profits of <strong>${GBP(projectedTotal)}</strong> fall in the £50,000–£250,000 marginal relief band, giving an effective rate of <strong>${pct}%</strong> rather than the standard 19%.${est} No associated companies assumed.`;
 }
 
-// Run on load
-loadLiveXeroData();
+// ── Load the monthly snapshot ──────────────────────────────────────────────
+fetch('afb.json', {cache: 'no-cache'})
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    document.getElementById('updated-date').textContent =
+      new Date(data.updated).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London'});
+    document.getElementById('footer-data').textContent = `Data from Xero, reconciled to end of ${monthName(data.reconciledThrough)}`;
+    renderVat(data);
+    renderCt(data);
+  })
+  .catch(() => {
+    document.getElementById('ct-hero-sub').textContent = 'Figures are temporarily unavailable. Please try again shortly or contact Flow.';
+  });
 </script>
