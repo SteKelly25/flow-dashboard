@@ -261,7 +261,7 @@ tbody tr.m-projected td { color: var(--ink2); font-style: italic; }
       </svg>
       <div class="header-title">A Friendly Bunch Ltd</div>
       <div class="header-sub" style="color:rgba(255,255,255,0.75);font-size:26px;font-weight:700;margin-bottom:4px;">Corporation Tax &amp; VAT Estimates</div>
-      <div class="header-sub">Accounting year ending 30 November 2026 &nbsp;·&nbsp; Updated <span id="updated-date">24 October 2026</span></div>
+      <div class="header-sub">Accounting year ending 30 November 2026 &nbsp;·&nbsp; Reconciled to <span id="updated-date"></span></div>
     </div>
     <!-- Flow starburst badge on right -->
     <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -480,8 +480,9 @@ function renderCt(data) {
 fetch('afb.json', {cache: 'no-cache'})
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
+    const [ry, rm] = data.reconciledThrough.split('-').map(Number);
     document.getElementById('updated-date').textContent =
-      new Date(data.updated).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London'});
+      new Date(ry, rm, 0).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
     document.getElementById('footer-data').textContent = `Data from Xero, reconciled to end of ${monthName(data.reconciledThrough)}`;
     renderVat(data);
     renderCt(data);
