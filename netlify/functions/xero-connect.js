@@ -24,7 +24,7 @@
 const https = require('https');
 
 const CLIENT_ID     = process.env.XERO_CLIENT_ID     || '47EAF98AD7FE4F429209E35AF977E253';
-const CLIENT_SECRET = process.env.XERO_CLIENT_SECRET || 'ao94y1-HKdtQDqciqm7W4Pe-hnPmt38o18_Iyrkqxz4AYCE-';
+const CLIENT_SECRET = process.env.XERO_CLIENT_SECRET;
 const BASE_URL      = 'https://effulgent-dasik-65faf7.netlify.app';
 const REDIRECT_URI  = `${BASE_URL}/.netlify/functions/xero-connect`;
 
